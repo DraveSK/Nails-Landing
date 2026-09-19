@@ -6,13 +6,34 @@ export function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-// JS-string-safe: the brand name gets substituted into both HTML text AND
-// single-quoted JS string literals inside the template's translations
-// object, so a raw apostrophe would break the script. HTML-unsafe chars
-// aren't a real concern here (operator-entered business names, not user
-// input from the public).
+// JSON.stringify does not escape "</script>" — if any embedded string
+// (tenant/service text) ever contained that literal sequence, it would
+// close the <script> tag early and let whatever follows in the HTML run
+// as attacker-controlled markup. Escaping "<" to a unicode escape inside
+// the JSON keeps it valid JS while making that impossible.
+function jsonForScript(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, '\\u003c');
+}
+
+// Tenant-controlled text (brand name, hero copy, service names...) landing
+// in raw HTML body text AND inside single-quoted JS string literals in the
+// template's translations object. Strips angle brackets so it can never
+// open a tag (blocks <script>/<img onerror> injection into the PUBLIC
+// site — this is real untrusted input: any agency can set it to anything
+// via their own /admin) and neutralizes quotes so it can't break out of
+// the JS string context either.
 function jsSafe(s: string): string {
-  return s.replace(/'/g, '’').replace(/"/g, '”');
+  return s.replace(/[<>]/g, '').replace(/'/g, '’').replace(/"/g, '”');
+}
+
+// logo_data_url is meant to be a data: URL the tenant's own browser
+// generated (canvas.toDataURL), but it's stored and rendered exactly as
+// submitted via a raw API call — never trust it's actually that shape.
+// Reject anything that isn't a plausible base64 image data URL rather
+// than interpolating it unescaped into src="...".
+function safeLogoUrl(url: string | null): string | null {
+  if (!url) return null;
+  return /^data:image\/(png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=]+$/.test(url) ? url : null;
 }
 
 // The nav's brand-name text has no width/overflow handling in the original
@@ -68,7 +89,8 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
   const brand = jsSafe(tenant.brand_name);
   const primary = tenant.color_primary || '#FF3D8A';
   const secondary = tenant.color_secondary || '#8B2FF0';
-  const faviconUrl = tenant.logo_data_url || '/logo.png';
+  const safeLogo = safeLogoUrl(tenant.logo_data_url);
+  const faviconUrl = safeLogo || '/logo.png';
 
   // The demo's hardcoded pink-circle-with-💅 favicon otherwise shows for
   // every agency regardless of their own branding.
@@ -83,8 +105,8 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
   );
   out = out.split('Nails by Linh').join(brand);
 
-  if (tenant.logo_data_url) {
-    out = out.split('src="/logo.png"').join(`src="${tenant.logo_data_url}"`);
+  if (safeLogo) {
+    out = out.split('src="/logo.png"').join(`src="${safeLogo}"`);
   }
 
   if (tenant.phone) {
@@ -207,7 +229,7 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
       </div>
       <script>
         (function() {
-          var srcs = ${JSON.stringify(lightboxSrcs)};
+          var srcs = ${jsonForScript(lightboxSrcs)};
           var current = 0;
           window.openGalleryLightbox = function(i) {
             current = i % srcs.length;
@@ -249,7 +271,7 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
   const i18nOverrides = buildI18nOverrides(tenant, services);
   out = out.replace('</body>', `<script>
   (function() {
-    var o = ${JSON.stringify(i18nOverrides)};
+    var o = ${jsonForScript(i18nOverrides)};
     if (typeof translations !== 'undefined') {
       Object.assign(translations.sk, o.sk);
       Object.assign(translations.vi, o.vi);
@@ -303,7 +325,7 @@ function renderFlipbook(tenant: Tenant, services: Service[], brandJsSafe: string
   // Same fallback as the nav/wheel logos elsewhere on the page: default to
   // the shared /logo.png static asset when the tenant hasn't uploaded
   // their own yet, instead of dropping to a plain emoji.
-  const logoHtml = `<img src="${tenant.logo_data_url || '/logo.png'}" alt="${brand}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+  const logoHtml = `<img src="${safeLogoUrl(tenant.logo_data_url) || '/logo.png'}" alt="${brand}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
 
   const PER_PAGE = 6;
   const pages: string[] = [];

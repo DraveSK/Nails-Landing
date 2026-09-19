@@ -121,6 +121,7 @@ export default {
       if (!(await requireSuperAuth(req, env))) return json({ success: false, message: 'Unauthorized' }, 401);
       const body = await req.json<{ slug: string; brand_name: string; password: string }>().catch(() => null);
       if (!body?.slug || !body?.brand_name || !body?.password) return json({ success: false, message: 'Missing fields' }, 400);
+      if (body.password.length < 6) return json({ success: false, message: 'Mật khẩu quá ngắn (tối thiểu 6 ký tự)' }, 400);
       const slug = body.slug.toLowerCase().replace(/[^a-z0-9-]/g, '');
       if (!slug) return json({ success: false, message: 'Invalid slug' }, 400);
       const existing = await getTenantBySlug(env, slug);

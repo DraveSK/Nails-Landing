@@ -222,33 +222,40 @@ export function tenantAdminPage(brandName: string, faviconUrl?: string, themeCol
 
     let editingServiceId = null;
 
+    // Escapes tenant-entered text before it goes into innerHTML — service
+    // names/descriptions are free text the tenant controls, and without
+    // this a value like "<img src=x onerror=...>" would execute in
+    // whoever's browser renders it (including a super-admin, if this same
+    // data is ever surfaced there).
+    function esc(s) { return (s == null ? '' : String(s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+
     function renderServices() {
       const tbody = document.querySelector('#svc_table tbody');
       tbody.innerHTML = services.map(s => {
         if (s.id === editingServiceId) {
           return \`<tr><td colspan="4" style="background:#faf9fc;padding:14px;">
             <div class="row">
-              <div><label>Icon</label><input id="edit_icon" value="\${s.icon}"></div>
-              <div><label>Giá</label><input id="edit_price" value="\${s.price}"></div>
+              <div><label>Icon</label><input id="edit_icon" value="\${esc(s.icon)}"></div>
+              <div><label>Giá</label><input id="edit_price" value="\${esc(s.price)}"></div>
             </div>
             <div class="row">
-              <div><label>Tên 🇸🇰</label><input id="edit_name" value="\${s.name}"></div>
-              <div><label>Mô tả 🇸🇰</label><input id="edit_desc" value="\${s.description || ''}"></div>
+              <div><label>Tên 🇸🇰</label><input id="edit_name" value="\${esc(s.name)}"></div>
+              <div><label>Mô tả 🇸🇰</label><input id="edit_desc" value="\${esc(s.description || '')}"></div>
             </div>
             <div class="row">
-              <div><label>Tên 🇻🇳</label><input id="edit_name_vi" value="\${s.name_vi || ''}"></div>
-              <div><label>Mô tả 🇻🇳</label><input id="edit_desc_vi" value="\${s.description_vi || ''}"></div>
+              <div><label>Tên 🇻🇳</label><input id="edit_name_vi" value="\${esc(s.name_vi || '')}"></div>
+              <div><label>Mô tả 🇻🇳</label><input id="edit_desc_vi" value="\${esc(s.description_vi || '')}"></div>
             </div>
             <div class="row">
-              <div><label>Tên 🇬🇧</label><input id="edit_name_en" value="\${s.name_en || ''}"></div>
-              <div><label>Mô tả 🇬🇧</label><input id="edit_desc_en" value="\${s.description_en || ''}"></div>
+              <div><label>Tên 🇬🇧</label><input id="edit_name_en" value="\${esc(s.name_en || '')}"></div>
+              <div><label>Mô tả 🇬🇧</label><input id="edit_desc_en" value="\${esc(s.description_en || '')}"></div>
             </div>
             <button class="primary" style="padding:8px 16px;" onclick="saveService('\${s.id}')">Lưu</button>
             <button class="secondary" onclick="cancelEditService()">Hủy</button>
           </td></tr>\`;
         }
         return \`<tr>
-          <td>\${s.icon}</td><td>\${s.name}<br><span style="color:#888;font-size:.8rem;">\${s.description || ''}</span></td><td>\${s.price}</td>
+          <td>\${esc(s.icon)}</td><td>\${esc(s.name)}<br><span style="color:#888;font-size:.8rem;">\${esc(s.description || '')}</span></td><td>\${esc(s.price)}</td>
           <td>
             <button class="secondary" onclick="editService('\${s.id}')">Sửa</button>
             <button class="danger" onclick="deleteService('\${s.id}')">Xóa</button>
@@ -503,15 +510,22 @@ export function superAdminPage(): string {
     function showMsg(text, ok) { document.getElementById('msg').innerHTML = '<div class="msg ' + (ok?'ok':'err') + '">' + text + '</div>'; setTimeout(() => document.getElementById('msg').innerHTML = '', 3000); }
     function logout() { localStorage.removeItem('super_token'); location.href = '/super-admin'; }
 
+    // Every tenant's brand_name/custom_domain is set by that tenant's own
+    // /admin, which a malicious agency fully controls — without escaping,
+    // a brand name like "<img src=x onerror=...>" would run script in the
+    // SUPER ADMIN's own browser the moment this list renders, handing an
+    // attacker the super_token straight out of localStorage.
+    function esc(s) { return (s == null ? '' : String(s)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+
     async function load() {
       const res = await fetch('/super-admin/api/tenants', { headers: authHeaders() });
       if (res.status === 401) { logout(); return; }
       const data = await res.json();
       const tbody = document.querySelector('#tenants_table tbody');
       tbody.innerHTML = data.tenants.map(t => \`<tr>
-        <td>\${t.slug}.nails.drave.sk</td><td>\${t.brand_name}</td>
+        <td>\${esc(t.slug)}.nails.drave.sk</td><td>\${esc(t.brand_name)}</td>
         <td>
-          <input id="domain_\${t.id}" value="\${t.custom_domain || ''}" placeholder="vd: salonlinh.sk" style="width:150px;">
+          <input id="domain_\${t.id}" value="\${esc(t.custom_domain || '')}" placeholder="vd: salonlinh.sk" style="width:150px;">
           <button class="secondary" style="padding:4px 10px;margin-left:4px;" onclick="saveDomain('\${t.id}')">Lưu</button>
         </td>
         <td>\${t.active ? '✅ Hoạt động' : '⏸️ Tạm dừng'}</td>
