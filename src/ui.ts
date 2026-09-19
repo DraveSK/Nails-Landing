@@ -452,7 +452,15 @@ export function superAdminPage(): string {
     </div>
     <div class="card">
       <h2>Danh sách đại lý</h2>
-      <p style="font-size:.8rem;color:#888;">Domain riêng: khách đổi nameserver domain của họ sang Cloudflare (Add a Site), đợi zone Active, rồi dán domain vào đây — báo tôi để tôi thêm Workers Route trỏ domain đó vào Worker "nails".</p>
+      <div style="background:#faf5ff;border-radius:10px;padding:14px 16px;margin-bottom:14px;font-size:.85rem;color:#444;">
+        <b>Gắn domain riêng cho đại lý (4 bước):</b>
+        <ol style="margin:8px 0 0;padding-left:20px;line-height:1.7;">
+          <li>Cloudflare Dashboard → <b>Add a Site</b> → nhập domain của khách</li>
+          <li>Khách đổi nameserver sang 2 cái Cloudflare đưa (tại nơi mua domain)</li>
+          <li>Đợi zone chuyển <b>Active</b> → nhắn Claude tên domain để thêm Workers Route</li>
+          <li>Dán domain vào ô "Domain riêng" ở bảng dưới đây</li>
+        </ol>
+      </div>
       <div class="table-wrap"><table id="tenants_table"><thead><tr><th>Slug</th><th>Tên</th><th>Domain riêng</th><th>Trạng thái</th><th></th></tr></thead><tbody></tbody></table></div>
     </div>
     <div class="card">
