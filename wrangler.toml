@@ -7,7 +7,15 @@ rules = [
 ]
 
 routes = [
-  { pattern = "nails.drave.sk", custom_domain = true }
+  # Bare nails.drave.sk stays the original sales/demo page ("Nails by Linh")
+  # showing prospective agencies what a generated site looks like.
+  { pattern = "nails.drave.sk", custom_domain = true },
+  # Every agency lives at <slug>.nails.drave.sk — a wildcard route (not
+  # `custom_domain`, which only matches one exact hostname) so a brand new
+  # agency is reachable the instant its row exists in D1, no new route or
+  # deploy needed per agency. Requires a wildcard DNS record for
+  # `*.nails.drave.sk` (proxied through Cloudflare) — see README.
+  { pattern = "*.nails.drave.sk/*", zone_name = "drave.sk" }
 ]
 
 # og-image.jpg (referenced only by <meta property="og:image">, not visibly
@@ -16,3 +24,8 @@ routes = [
 # else (the HTML response).
 [assets]
 directory = "./public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nails-landing-db"
+database_id = "5b1f0f8b-78c7-4ea2-8087-c1018bac2446"
