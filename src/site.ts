@@ -172,7 +172,25 @@ ${tenant.logo_data_url ? `<link rel="apple-touch-icon" href="${tenant.logo_data_
 
   out = out.replace('© 2026', `© ${new Date().getFullYear()}`);
 
-  out = out.replace('</body>', `${renderInstallPromptScript(escapeHtml(tenant.brand_name))}
+  // ── Per-language content for the SK/VI/EN switcher. The literal-text
+  // substitutions above only cover the page's initial state (Slovak,
+  // rendered from raw HTML before any script runs) — switching language
+  // re-renders from this `translations` object, so without this override
+  // VI/EN would fall back to the original demo's placeholder text. Built
+  // as JSON rather than string-splicing into the script, since a tenant's
+  // text can contain quotes/apostrophes that would otherwise break it.
+  const i18nOverrides = buildI18nOverrides(tenant, services);
+  out = out.replace('</body>', `<script>
+  (function() {
+    var o = ${JSON.stringify(i18nOverrides)};
+    if (typeof translations !== 'undefined') {
+      Object.assign(translations.sk, o.sk);
+      Object.assign(translations.vi, o.vi);
+      Object.assign(translations.en, o.en);
+    }
+  })();
+</script>
+${renderInstallPromptScript(escapeHtml(tenant.brand_name))}
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() { navigator.serviceWorker.register('/sw.js').catch(function() {}); });
@@ -183,13 +201,42 @@ ${tenant.logo_data_url ? `<link rel="apple-touch-icon" href="${tenant.logo_data_
   return out;
 }
 
+function buildI18nOverrides(tenant: Tenant, services: Service[]) {
+  const sk: Record<string, string> = {
+    eyebrow: tenant.eyebrow_text,
+    hero_title: tenant.hero_title,
+    hero_lede: tenant.hero_subtitle,
+  };
+  const vi: Record<string, string> = {
+    eyebrow: tenant.eyebrow_text_vi || tenant.eyebrow_text,
+    hero_title: tenant.hero_title_vi || tenant.hero_title,
+    hero_lede: tenant.hero_subtitle_vi || tenant.hero_subtitle,
+  };
+  const en: Record<string, string> = {
+    eyebrow: tenant.eyebrow_text_en || tenant.eyebrow_text,
+    hero_title: tenant.hero_title_en || tenant.hero_title,
+    hero_lede: tenant.hero_subtitle_en || tenant.hero_subtitle,
+  };
+  services.slice(0, 6).forEach((s, i) => {
+    const n = i + 1;
+    sk[`card${n}_title`] = s.name;
+    sk[`card${n}_desc`] = s.description;
+    vi[`card${n}_title`] = s.name_vi || s.name;
+    vi[`card${n}_desc`] = s.description_vi || s.description;
+    en[`card${n}_title`] = s.name_en || s.name;
+    en[`card${n}_desc`] = s.description_en || s.description;
+  });
+  return { sk, vi, en };
+}
+
 function renderFlipbook(tenant: Tenant, services: Service[], brandJsSafe: string): { html: string; total: number } {
   const brand = escapeHtml(tenant.brand_name);
   const primary = tenant.color_primary || '#FF3D8A';
   const secondary = tenant.color_secondary || '#8B2FF0';
-  const logoHtml = tenant.logo_data_url
-    ? `<img src="${tenant.logo_data_url}" alt="${brand}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
-    : '💅';
+  // Same fallback as the nav/wheel logos elsewhere on the page: default to
+  // the shared /logo.png static asset when the tenant hasn't uploaded
+  // their own yet, instead of dropping to a plain emoji.
+  const logoHtml = `<img src="${tenant.logo_data_url || '/logo.png'}" alt="${brand}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
 
   const PER_PAGE = 6;
   const pages: string[] = [];
@@ -208,7 +255,21 @@ function renderFlipbook(tenant: Tenant, services: Service[], brandJsSafe: string
           <div class="page-content">${p}</div>
         </div>`).join('');
 
-  const ctaLink = tenant.calendly_url || (tenant.whatsapp_number ? `https://wa.me/${tenant.whatsapp_number.replace(/[^0-9]/g, '')}` : '#');
+  // Same "open the Calendly popup widget in-page" behavior as the main
+  // contact section's booking button (index.html's #kontakt btn-calendar),
+  // instead of just linking out to a new tab — falls back to a plain
+  // WhatsApp link (which is inherently an external hand-off anyway) only
+  // when the tenant hasn't set a Calendly URL.
+  const backCta = tenant.calendly_url
+    ? `<a class="btn btn-primary" href="${escapeHtml(tenant.calendly_url)}" target="_blank"
+         onclick="if(typeof Calendly !== 'undefined'){Calendly.initPopupWidget({url: '${jsSafe(tenant.calendly_url)}'}); return false;}" style="margin-top:20px;">
+        <span>💬 Rezervovať termín</span>
+      </a>`
+    : tenant.whatsapp_number
+      ? `<a class="btn btn-primary" href="https://wa.me/${tenant.whatsapp_number.replace(/[^0-9]/g, '')}" target="_blank" style="margin-top:20px;">
+          <span>💬 Rezervovať termín</span>
+        </a>`
+      : '';
 
   const html = `<div class="flipbook" id="flipbook">
         <div class="flip-page" style="z-index:${total};background:linear-gradient(160deg,${primary},${secondary});">
@@ -223,9 +284,7 @@ function renderFlipbook(tenant: Tenant, services: Service[], brandJsSafe: string
         <div class="flip-page" style="z-index:1;background:linear-gradient(160deg,var(--ink),#4A2065);">
           <div class="page-content page-cover">
             <h3>Tešíme sa na vás! 💅</h3>
-            <a class="btn btn-primary" href="${escapeHtml(ctaLink)}" target="_blank" style="margin-top:20px;">
-              <span>💬 Rezervovať termín</span>
-            </a>
+            ${backCta}
           </div>
         </div>
       </div>

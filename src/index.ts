@@ -9,7 +9,7 @@ import { signToken, verifyToken, hashPassword, verifyPassword, getBearerToken } 
 import {
   getTenantBySlug, getTenantByCustomDomain, getTenantById, listTenants, listServices,
   updateTenantFields, updateTenantAdminFields, createTenant, createService, updateService, deleteService,
-  getSuperAdminPasswordHash, updateSuperAdminPasswordHash,
+  getSuperAdminPasswordHash, updateSuperAdminPasswordHash, updateTenantPasswordHash,
   listGalleryImages, addGalleryImage, getGalleryImage, deleteGalleryImage,
   countGalleryImages, MAX_GALLERY_IMAGES_PER_TENANT,
 } from './db';
@@ -144,6 +144,17 @@ export default {
       const services = await listServices(env, tenant.id);
       return json({ success: true, tenant, services });
     }
+    if (tenant && path === '/admin/api/change-password' && req.method === 'POST') {
+      if (!(await requireTenantAuth(req, env, tenant.id))) return json({ success: false, message: 'Unauthorized' }, 401);
+      const body = await req.json<{ currentPassword: string; newPassword: string }>().catch(() => null);
+      if (!body?.currentPassword || !body?.newPassword) return json({ success: false, message: 'Thiếu thông tin' }, 400);
+      if (body.newPassword.length < 6) return json({ success: false, message: 'Mật khẩu mới quá ngắn' }, 400);
+      if (!(await verifyPassword(body.currentPassword, tenant.admin_password_hash))) {
+        return json({ success: false, message: 'Mật khẩu hiện tại không đúng' }, 401);
+      }
+      await updateTenantPasswordHash(env, tenant.id, await hashPassword(body.newPassword));
+      return json({ success: true });
+    }
     if (tenant && path === '/admin/api/tenant' && req.method === 'PUT') {
       if (!(await requireTenantAuth(req, env, tenant.id))) return json({ success: false, message: 'Unauthorized' }, 401);
       const fields = await req.json<Record<string, any>>().catch(() => ({}));
@@ -152,9 +163,12 @@ export default {
     }
     if (tenant && path === '/admin/api/services' && req.method === 'POST') {
       if (!(await requireTenantAuth(req, env, tenant.id))) return json({ success: false, message: 'Unauthorized' }, 401);
-      const body = await req.json<{ name: string; price: string; icon: string; description?: string }>().catch(() => null);
+      const body = await req.json<{ name: string; price: string; icon: string; description?: string; name_vi?: string; name_en?: string; description_vi?: string; description_en?: string }>().catch(() => null);
       if (!body?.name || !body?.price) return json({ success: false, message: 'Thiếu thông tin' }, 400);
-      const service = await createService(env, tenant.id, { name: body.name, price: body.price, icon: body.icon || '💅', description: body.description });
+      const service = await createService(env, tenant.id, {
+        name: body.name, price: body.price, icon: body.icon || '💅', description: body.description,
+        name_vi: body.name_vi, name_en: body.name_en, description_vi: body.description_vi, description_en: body.description_en,
+      });
       return json({ success: true, service });
     }
     const svcMatch = path.match(/^\/admin\/api\/services\/([^/]+)$/);

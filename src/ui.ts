@@ -65,9 +65,16 @@ export function tenantAdminPage(): string {
       </div>
       <label>Logo</label><input id="logo_file" type="file" accept="image/*">
       <img id="logo_preview" style="max-width:80px;max-height:80px;border-radius:50%;margin-top:8px;display:none;">
-      <label>Dòng chữ nhỏ phía trên tiêu đề (eyebrow)</label><input id="eyebrow_text">
-      <label>Tiêu đề chính</label><input id="hero_title">
-      <label>Mô tả ngắn</label><textarea id="hero_subtitle"></textarea>
+      <p style="font-size:.8rem;color:#888;margin-top:16px;">Site có nút chuyển 🇸🇰 🇻🇳 🇬🇧 — nhập cả 3 để khách xem đúng ngôn ngữ khi họ đổi. Bỏ trống VI/EN thì sẽ tự dùng bản SK.</p>
+      <label>Dòng chữ nhỏ phía trên tiêu đề (eyebrow) 🇸🇰</label><input id="eyebrow_text">
+      <label>Eyebrow 🇻🇳</label><input id="eyebrow_text_vi">
+      <label>Eyebrow 🇬🇧</label><input id="eyebrow_text_en">
+      <label>Tiêu đề chính 🇸🇰</label><input id="hero_title">
+      <label>Tiêu đề chính 🇻🇳</label><input id="hero_title_vi">
+      <label>Tiêu đề chính 🇬🇧</label><input id="hero_title_en">
+      <label>Mô tả ngắn 🇸🇰</label><textarea id="hero_subtitle"></textarea>
+      <label>Mô tả ngắn 🇻🇳</label><textarea id="hero_subtitle_vi"></textarea>
+      <label>Mô tả ngắn 🇬🇧</label><textarea id="hero_subtitle_en"></textarea>
       <button class="primary" onclick="saveTenant()">Lưu</button>
     </div>
 
@@ -106,11 +113,28 @@ export function tenantAdminPage(): string {
       <table id="svc_table"><thead><tr><th>Icon</th><th>Tên</th><th>Giá</th><th></th></tr></thead><tbody></tbody></table>
       <div class="row" style="margin-top:14px;">
         <div><label>Icon (emoji)</label><input id="new_icon" value="💅"></div>
-        <div><label>Tên dịch vụ</label><input id="new_name"></div>
+        <div><label>Giá</label><input id="new_price" placeholder="vd: từ 25€"></div>
       </div>
-      <label>Giá</label><input id="new_price" placeholder="vd: từ 25€">
-      <label>Mô tả ngắn (hiện dưới tên dịch vụ)</label><input id="new_desc" placeholder="vd: Bền đẹp, giữ được 4 tuần">
+      <div class="row">
+        <div><label>Tên dịch vụ 🇸🇰</label><input id="new_name"></div>
+        <div><label>Mô tả 🇸🇰</label><input id="new_desc"></div>
+      </div>
+      <div class="row">
+        <div><label>Tên dịch vụ 🇻🇳</label><input id="new_name_vi"></div>
+        <div><label>Mô tả 🇻🇳</label><input id="new_desc_vi"></div>
+      </div>
+      <div class="row">
+        <div><label>Tên dịch vụ 🇬🇧</label><input id="new_name_en"></div>
+        <div><label>Mô tả 🇬🇧</label><input id="new_desc_en"></div>
+      </div>
       <button class="primary" onclick="addService()">Thêm dịch vụ</button>
+    </div>
+
+    <div class="card">
+      <h2>Đổi mật khẩu đăng nhập</h2>
+      <label>Mật khẩu hiện tại</label><input id="cur_pw" type="password">
+      <label>Mật khẩu mới</label><input id="new_pw" type="password">
+      <button class="primary" onclick="changePassword()">Đổi mật khẩu</button>
     </div>
   </div>
 
@@ -128,7 +152,7 @@ export function tenantAdminPage(): string {
       if (res.status === 401) { logout(); return; }
       const data = await res.json();
       tenant = data.tenant; services = data.services;
-      for (const k of ['brand_name','color_primary','color_secondary','eyebrow_text','hero_title','hero_subtitle','address','phone','whatsapp_number','email','facebook_url','instagram_url','calendly_url','hours_weekday','hours_saturday','hours_sunday']) {
+      for (const k of ['brand_name','color_primary','color_secondary','eyebrow_text','eyebrow_text_vi','eyebrow_text_en','hero_title','hero_title_vi','hero_title_en','hero_subtitle','hero_subtitle_vi','hero_subtitle_en','address','phone','whatsapp_number','email','facebook_url','instagram_url','calendly_url','hours_weekday','hours_saturday','hours_sunday']) {
         const el = document.getElementById(k); if (el) el.value = tenant[k] || '';
       }
       if (tenant.logo_data_url) { document.getElementById('logo_preview').src = tenant.logo_data_url; document.getElementById('logo_preview').style.display = 'block'; }
@@ -141,15 +165,26 @@ export function tenantAdminPage(): string {
       const tbody = document.querySelector('#svc_table tbody');
       tbody.innerHTML = services.map(s => {
         if (s.id === editingServiceId) {
-          return \`<tr>
-            <td><input id="edit_icon" value="\${s.icon}" style="width:50px;"></td>
-            <td><input id="edit_name" value="\${s.name}"><br><input id="edit_desc" value="\${s.description || ''}" placeholder="Mô tả ngắn" style="margin-top:4px;"></td>
-            <td><input id="edit_price" value="\${s.price}" style="width:80px;"></td>
-            <td>
-              <button class="primary" style="padding:6px 12px;margin-top:0;" onclick="saveService('\${s.id}')">Lưu</button>
-              <button class="secondary" onclick="cancelEditService()">Hủy</button>
-            </td>
-          </tr>\`;
+          return \`<tr><td colspan="4" style="background:#faf9fc;padding:14px;">
+            <div class="row">
+              <div><label>Icon</label><input id="edit_icon" value="\${s.icon}"></div>
+              <div><label>Giá</label><input id="edit_price" value="\${s.price}"></div>
+            </div>
+            <div class="row">
+              <div><label>Tên 🇸🇰</label><input id="edit_name" value="\${s.name}"></div>
+              <div><label>Mô tả 🇸🇰</label><input id="edit_desc" value="\${s.description || ''}"></div>
+            </div>
+            <div class="row">
+              <div><label>Tên 🇻🇳</label><input id="edit_name_vi" value="\${s.name_vi || ''}"></div>
+              <div><label>Mô tả 🇻🇳</label><input id="edit_desc_vi" value="\${s.description_vi || ''}"></div>
+            </div>
+            <div class="row">
+              <div><label>Tên 🇬🇧</label><input id="edit_name_en" value="\${s.name_en || ''}"></div>
+              <div><label>Mô tả 🇬🇧</label><input id="edit_desc_en" value="\${s.description_en || ''}"></div>
+            </div>
+            <button class="primary" style="padding:8px 16px;" onclick="saveService('\${s.id}')">Lưu</button>
+            <button class="secondary" onclick="cancelEditService()">Hủy</button>
+          </td></tr>\`;
         }
         return \`<tr>
           <td>\${s.icon}</td><td>\${s.name}<br><span style="color:#888;font-size:.8rem;">\${s.description || ''}</span></td><td>\${s.price}</td>
@@ -169,12 +204,17 @@ export function tenantAdminPage(): string {
       const price = document.getElementById('edit_price').value.trim();
       const icon = document.getElementById('edit_icon').value.trim() || '💅';
       const description = document.getElementById('edit_desc').value.trim();
+      const name_vi = document.getElementById('edit_name_vi').value.trim();
+      const name_en = document.getElementById('edit_name_en').value.trim();
+      const description_vi = document.getElementById('edit_desc_vi').value.trim();
+      const description_en = document.getElementById('edit_desc_en').value.trim();
       if (!name || !price) { showMsg('Vui lòng điền tên và giá', false); return; }
-      const res = await fetch('/admin/api/services/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ name, price, icon, description }) });
+      const fields = { name, price, icon, description, name_vi, name_en, description_vi, description_en };
+      const res = await fetch('/admin/api/services/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(fields) });
       const data = await res.json();
       if (data.success) {
         const s = services.find(x => x.id === id);
-        Object.assign(s, { name, price, icon, description });
+        Object.assign(s, fields);
         editingServiceId = null;
         renderServices();
         showMsg('Đã lưu ✅', true);
@@ -183,7 +223,7 @@ export function tenantAdminPage(): string {
 
     async function saveTenant() {
       const fields = {};
-      for (const k of ['brand_name','color_primary','color_secondary','eyebrow_text','hero_title','hero_subtitle','address','phone','whatsapp_number','email','facebook_url','instagram_url','calendly_url','hours_weekday','hours_saturday','hours_sunday']) {
+      for (const k of ['brand_name','color_primary','color_secondary','eyebrow_text','eyebrow_text_vi','eyebrow_text_en','hero_title','hero_title_vi','hero_title_en','hero_subtitle','hero_subtitle_vi','hero_subtitle_en','address','phone','whatsapp_number','email','facebook_url','instagram_url','calendly_url','hours_weekday','hours_saturday','hours_sunday']) {
         fields[k] = document.getElementById(k).value;
       }
       const res = await fetch('/admin/api/tenant', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(fields) });
@@ -207,10 +247,18 @@ export function tenantAdminPage(): string {
       const price = document.getElementById('new_price').value.trim();
       const icon = document.getElementById('new_icon').value.trim() || '💅';
       const description = document.getElementById('new_desc').value.trim();
+      const name_vi = document.getElementById('new_name_vi').value.trim();
+      const name_en = document.getElementById('new_name_en').value.trim();
+      const description_vi = document.getElementById('new_desc_vi').value.trim();
+      const description_en = document.getElementById('new_desc_en').value.trim();
       if (!name || !price) { showMsg('Vui lòng điền tên và giá', false); return; }
-      const res = await fetch('/admin/api/services', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ name, price, icon, description }) });
+      const res = await fetch('/admin/api/services', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ name, price, icon, description, name_vi, name_en, description_vi, description_en }) });
       const data = await res.json();
-      if (data.success) { services.push(data.service); renderServices(); document.getElementById('new_name').value = ''; document.getElementById('new_price').value = ''; document.getElementById('new_desc').value = ''; }
+      if (data.success) {
+        services.push(data.service);
+        renderServices();
+        ['new_name','new_price','new_desc','new_name_vi','new_name_en','new_desc_vi','new_desc_en'].forEach(id => document.getElementById(id).value = '');
+      } else showMsg(data.message || 'Có lỗi xảy ra', false);
     }
 
     async function deleteService(id) {
@@ -257,7 +305,7 @@ export function tenantAdminPage(): string {
     }
     function isHeic(file) {
       const name = (file.name || '').toLowerCase();
-      return /image\/heic|image\/heif/.test(file.type) || name.endsWith('.heic') || name.endsWith('.heif');
+      return file.type === 'image/heic' || file.type === 'image/heif' || name.endsWith('.heic') || name.endsWith('.heif');
     }
 
     // Resize/compress client-side before upload — keeps R2 storage and
@@ -308,6 +356,17 @@ export function tenantAdminPage(): string {
       const res = await fetch('/admin/api/gallery/' + id, { method: 'DELETE', headers: authHeaders() });
       const data = await res.json();
       if (data.success) { gallery = gallery.filter(g => g.id !== id); renderGallery(); }
+    }
+
+    async function changePassword() {
+      const currentPassword = document.getElementById('cur_pw').value;
+      const newPassword = document.getElementById('new_pw').value;
+      if (!currentPassword || !newPassword) { showMsg('Vui lòng điền đầy đủ mật khẩu', false); return; }
+      if (newPassword.length < 6) { showMsg('Mật khẩu mới phải có ít nhất 6 ký tự', false); return; }
+      const res = await fetch('/admin/api/change-password', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ currentPassword, newPassword }) });
+      const data = await res.json();
+      if (data.success) { showMsg('Đổi mật khẩu thành công ✅', true); document.getElementById('cur_pw').value = ''; document.getElementById('new_pw').value = ''; }
+      else showMsg(data.message || 'Có lỗi xảy ra', false);
     }
 
     load();

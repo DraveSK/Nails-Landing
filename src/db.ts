@@ -13,6 +13,12 @@ export interface Tenant {
   eyebrow_text: string;
   hero_title: string;
   hero_subtitle: string;
+  eyebrow_text_vi: string;
+  eyebrow_text_en: string;
+  hero_title_vi: string;
+  hero_title_en: string;
+  hero_subtitle_vi: string;
+  hero_subtitle_en: string;
   address: string;
   phone: string;
   whatsapp_number: string;
@@ -34,6 +40,10 @@ export interface Service {
   price: string;
   icon: string;
   description: string;
+  name_vi: string;
+  name_en: string;
+  description_vi: string;
+  description_en: string;
   sort_order: number;
 }
 
@@ -43,6 +53,7 @@ export interface Service {
 export const TENANT_EDITABLE_FIELDS = [
   'brand_name', 'logo_data_url', 'color_primary', 'color_secondary',
   'eyebrow_text', 'hero_title', 'hero_subtitle',
+  'eyebrow_text_vi', 'eyebrow_text_en', 'hero_title_vi', 'hero_title_en', 'hero_subtitle_vi', 'hero_subtitle_en',
   'address', 'phone', 'whatsapp_number', 'email',
   'facebook_url', 'instagram_url', 'calendly_url',
   'hours_weekday', 'hours_saturday', 'hours_sunday',
@@ -70,21 +81,38 @@ export async function listServices(env: Env, tenantId: string): Promise<Service[
   return results;
 }
 
-export async function createService(env: Env, tenantId: string, s: { name: string; price: string; icon: string; description?: string }): Promise<Service> {
+export interface ServiceInput {
+  name: string;
+  price: string;
+  icon: string;
+  description?: string;
+  name_vi?: string;
+  name_en?: string;
+  description_vi?: string;
+  description_en?: string;
+}
+
+export async function createService(env: Env, tenantId: string, s: ServiceInput): Promise<Service> {
   const id = crypto.randomUUID();
   const { results } = await env.DB.prepare('SELECT COALESCE(MAX(sort_order), -1) + 1 AS n FROM services WHERE tenant_id = ?').bind(tenantId).all<{ n: number }>();
   const sortOrder = results[0]?.n ?? 0;
   const description = s.description || '';
-  await env.DB.prepare('INSERT INTO services (id, tenant_id, name, price, icon, description, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)')
-    .bind(id, tenantId, s.name, s.price, s.icon, description, sortOrder).run();
-  return { id, tenant_id: tenantId, name: s.name, price: s.price, icon: s.icon, description, sort_order: sortOrder };
+  const name_vi = s.name_vi || '';
+  const name_en = s.name_en || '';
+  const description_vi = s.description_vi || '';
+  const description_en = s.description_en || '';
+  await env.DB.prepare('INSERT INTO services (id, tenant_id, name, price, icon, description, name_vi, name_en, description_vi, description_en, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+    .bind(id, tenantId, s.name, s.price, s.icon, description, name_vi, name_en, description_vi, description_en, sortOrder).run();
+  return { id, tenant_id: tenantId, name: s.name, price: s.price, icon: s.icon, description, name_vi, name_en, description_vi, description_en, sort_order: sortOrder };
 }
 
-export async function updateService(env: Env, tenantId: string, serviceId: string, fields: { name?: string; price?: string; icon?: string; description?: string }): Promise<void> {
-  const keys = (['name', 'price', 'icon', 'description'] as const).filter(k => fields[k] !== undefined);
+const SERVICE_UPDATABLE_FIELDS = ['name', 'price', 'icon', 'description', 'name_vi', 'name_en', 'description_vi', 'description_en'] as const;
+
+export async function updateService(env: Env, tenantId: string, serviceId: string, fields: Partial<ServiceInput>): Promise<void> {
+  const keys = SERVICE_UPDATABLE_FIELDS.filter(k => (fields as Record<string, any>)[k] !== undefined);
   if (keys.length === 0) return;
   const setClause = keys.map(k => `${k} = ?`).join(', ');
-  const values = keys.map(k => fields[k]);
+  const values = keys.map(k => (fields as Record<string, any>)[k]);
   await env.DB.prepare(`UPDATE services SET ${setClause} WHERE id = ? AND tenant_id = ?`).bind(...values, serviceId, tenantId).run();
 }
 
@@ -170,4 +198,8 @@ export async function getSuperAdminPasswordHash(env: Env): Promise<string | null
 
 export async function updateSuperAdminPasswordHash(env: Env, hash: string): Promise<void> {
   await env.DB.prepare('UPDATE super_admin SET password_hash = ? WHERE id = 1').bind(hash).run();
+}
+
+export async function updateTenantPasswordHash(env: Env, tenantId: string, hash: string): Promise<void> {
+  await env.DB.prepare("UPDATE tenants SET admin_password_hash = ?, updated_at = datetime('now') WHERE id = ?").bind(hash, tenantId).run();
 }
