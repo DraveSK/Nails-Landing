@@ -33,9 +33,9 @@ export function loginPage(title: string, loginEndpoint: string, afterLoginKey: s
   <div class="login-box card">
     <h2>${title}</h2>
     <div id="msg"></div>
-    <label>Heslo</label>
-    <input type="password" id="pw" placeholder="Heslo">
-    <button class="primary" onclick="login()" style="width:100%">Prihlásiť sa</button>
+    <label>Mật khẩu</label>
+    <input type="password" id="pw" placeholder="Mật khẩu">
+    <button class="primary" onclick="login()" style="width:100%">Đăng nhập</button>
   </div>
   <script>
     if (localStorage.getItem('${afterLoginKey}')) location.href = '${appPath}';
@@ -43,7 +43,7 @@ export function loginPage(title: string, loginEndpoint: string, afterLoginKey: s
       const res = await fetch('${loginEndpoint}', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ password: document.getElementById('pw').value }) });
       const data = await res.json();
       if (data.success) { localStorage.setItem('${afterLoginKey}', data.token); location.href = '${appPath}'; }
-      else document.getElementById('msg').innerHTML = '<div class="msg err">' + (data.message || 'Nesprávne heslo') + '</div>';
+      else document.getElementById('msg').innerHTML = '<div class="msg err">' + (data.message || 'Sai mật khẩu') + '</div>';
     }
     document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
   </script></body></html>`;
@@ -52,64 +52,64 @@ export function loginPage(title: string, loginEndpoint: string, afterLoginKey: s
 export function tenantAdminPage(): string {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin</title><style>${SHARED_STYLE}</style></head><body>
-  <div class="bar"><b>Admin — nastavenia stránky</b><button onclick="logout()">Odhlásiť</button></div>
+  <div class="bar"><b>Admin — Quản lý trang</b><button onclick="logout()">Đăng xuất</button></div>
   <div class="wrap">
     <div id="msg"></div>
 
     <div class="card">
-      <h2>Vzhľad a hlavička</h2>
-      <label>Názov salónu</label><input id="brand_name">
+      <h2>Giao diện và tiêu đề</h2>
+      <label>Tên salon</label><input id="brand_name">
       <div class="row">
-        <div><label>Primárna farba</label><input id="color_primary" type="color"></div>
-        <div><label>Sekundárna farba</label><input id="color_secondary" type="color"></div>
+        <div><label>Màu chính</label><input id="color_primary" type="color"></div>
+        <div><label>Màu phụ</label><input id="color_secondary" type="color"></div>
       </div>
       <label>Logo</label><input id="logo_file" type="file" accept="image/*">
       <img id="logo_preview" style="max-width:80px;max-height:80px;border-radius:50%;margin-top:8px;display:none;">
-      <label>Krátky text nad nadpisom (eyebrow)</label><input id="eyebrow_text">
-      <label>Hlavný nadpis</label><input id="hero_title">
-      <label>Podnadpis</label><textarea id="hero_subtitle"></textarea>
-      <button class="primary" onclick="saveTenant()">Uložiť</button>
+      <label>Dòng chữ nhỏ phía trên tiêu đề (eyebrow)</label><input id="eyebrow_text">
+      <label>Tiêu đề chính</label><input id="hero_title">
+      <label>Mô tả ngắn</label><textarea id="hero_subtitle"></textarea>
+      <button class="primary" onclick="saveTenant()">Lưu</button>
     </div>
 
     <div class="card">
-      <h2>Kontakt a pätička</h2>
+      <h2>Liên hệ và chân trang</h2>
       <div class="row">
-        <div><label>Adresa</label><input id="address"></div>
-        <div><label>Telefón</label><input id="phone"></div>
+        <div><label>Địa chỉ</label><input id="address"></div>
+        <div><label>Điện thoại</label><input id="phone"></div>
       </div>
       <div class="row">
-        <div><label>WhatsApp číslo (len číslice)</label><input id="whatsapp_number"></div>
+        <div><label>Số WhatsApp (chỉ số)</label><input id="whatsapp_number"></div>
         <div><label>Email</label><input id="email"></div>
       </div>
       <div class="row">
         <div><label>Facebook URL</label><input id="facebook_url"></div>
         <div><label>Instagram URL</label><input id="instagram_url"></div>
       </div>
-      <label>Calendly URL (rezervácie)</label><input id="calendly_url">
+      <label>Calendly URL (đặt lịch)</label><input id="calendly_url">
       <div class="row">
-        <div><label>Po–Pia hodiny</label><input id="hours_weekday"></div>
-        <div><label>Sobota hodiny</label><input id="hours_saturday"></div>
+        <div><label>Giờ Thứ 2 – Thứ 6</label><input id="hours_weekday"></div>
+        <div><label>Giờ Thứ 7</label><input id="hours_saturday"></div>
       </div>
-      <label>Nedeľa hodiny</label><input id="hours_sunday">
-      <button class="primary" onclick="saveTenant()">Uložiť</button>
+      <label>Giờ Chủ nhật</label><input id="hours_sunday">
+      <button class="primary" onclick="saveTenant()">Lưu</button>
     </div>
 
     <div class="card">
-      <h2>Album fotiek (interiér, práce)</h2>
-      <p style="font-size:.85rem;color:#666;margin-bottom:10px;">Fotky sa na stránke zobrazujú ako knižka, ktorú návštevník listuje. Nahrané fotky sa automaticky zmenšia.</p>
+      <h2>Album ảnh (nội thất, sản phẩm)</h2>
+      <p style="font-size:.85rem;color:#666;margin-bottom:10px;">Ảnh sẽ hiển thị trên trang dưới dạng cuốn sách để khách lật xem. Ảnh tải lên sẽ tự động được nén nhỏ lại.</p>
       <input id="gallery_file" type="file" accept="image/*" multiple>
       <div id="gallery_grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-top:14px;"></div>
     </div>
 
     <div class="card">
-      <h2>Cenník služieb</h2>
-      <table id="svc_table"><thead><tr><th>Ikona</th><th>Názov</th><th>Cena</th><th></th></tr></thead><tbody></tbody></table>
+      <h2>Bảng giá dịch vụ</h2>
+      <table id="svc_table"><thead><tr><th>Icon</th><th>Tên</th><th>Giá</th><th></th></tr></thead><tbody></tbody></table>
       <div class="row" style="margin-top:14px;">
-        <div><label>Ikona (emoji)</label><input id="new_icon" value="💅"></div>
-        <div><label>Názov</label><input id="new_name"></div>
+        <div><label>Icon (emoji)</label><input id="new_icon" value="💅"></div>
+        <div><label>Tên dịch vụ</label><input id="new_name"></div>
       </div>
-      <label>Cena</label><input id="new_price" placeholder="napr. od 25€">
-      <button class="primary" onclick="addService()">Pridať službu</button>
+      <label>Giá</label><input id="new_price" placeholder="vd: từ 25€">
+      <button class="primary" onclick="addService()">Thêm dịch vụ</button>
     </div>
   </div>
 
@@ -138,7 +138,7 @@ export function tenantAdminPage(): string {
       const tbody = document.querySelector('#svc_table tbody');
       tbody.innerHTML = services.map(s => \`<tr>
         <td>\${s.icon}</td><td>\${s.name}</td><td>\${s.price}</td>
-        <td><button class="danger" onclick="deleteService('\${s.id}')">Zmazať</button></td>
+        <td><button class="danger" onclick="deleteService('\${s.id}')">Xóa</button></td>
       </tr>\`).join('');
     }
 
@@ -149,7 +149,7 @@ export function tenantAdminPage(): string {
       }
       const res = await fetch('/admin/api/tenant', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(fields) });
       const data = await res.json();
-      showMsg(data.success ? 'Uložené ✅' : (data.message || 'Chyba'), data.success);
+      showMsg(data.success ? 'Đã lưu ✅' : (data.message || 'Có lỗi xảy ra'), data.success);
     }
 
     document.getElementById('logo_file').addEventListener('change', async (e) => {
@@ -158,7 +158,7 @@ export function tenantAdminPage(): string {
       reader.onload = async () => {
         const res = await fetch('/admin/api/tenant', { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ logo_data_url: reader.result }) });
         const data = await res.json();
-        if (data.success) { document.getElementById('logo_preview').src = reader.result; document.getElementById('logo_preview').style.display = 'block'; showMsg('Logo uložené ✅', true); }
+        if (data.success) { document.getElementById('logo_preview').src = reader.result; document.getElementById('logo_preview').style.display = 'block'; showMsg('Đã lưu logo ✅', true); }
       };
       reader.readAsDataURL(file);
     });
@@ -167,7 +167,7 @@ export function tenantAdminPage(): string {
       const name = document.getElementById('new_name').value.trim();
       const price = document.getElementById('new_price').value.trim();
       const icon = document.getElementById('new_icon').value.trim() || '💅';
-      if (!name || !price) { showMsg('Vyplňte názov a cenu', false); return; }
+      if (!name || !price) { showMsg('Vui lòng điền tên và giá', false); return; }
       const res = await fetch('/admin/api/services', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ name, price, icon }) });
       const data = await res.json();
       if (data.success) { services.push(data.service); renderServices(); document.getElementById('new_name').value = ''; document.getElementById('new_price').value = ''; }
@@ -230,8 +230,8 @@ export function tenantAdminPage(): string {
           const res = await fetch('/admin/api/gallery', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ data: dataUrl }) });
           const data = await res.json();
           if (data.success) { gallery.push(data.image); renderGallery(); }
-          else showMsg(data.message || 'Chyba pri nahrávaní', false);
-        } catch (err) { showMsg('Chyba pri spracovaní obrázka', false); }
+          else showMsg(data.message || 'Lỗi khi tải ảnh lên', false);
+        } catch (err) { showMsg('Lỗi khi xử lý ảnh', false); }
       }
       e.target.value = '';
     });

@@ -14,6 +14,7 @@ import {
   countGalleryImages, MAX_GALLERY_IMAGES_PER_TENANT,
 } from './db';
 import { renderTenantSite, renderNotFound, renderPrivacyPage } from './site';
+import { renderManifest, renderServiceWorker } from './pwa';
 import { loginPage, tenantAdminPage, superAdminPage, superAdminLoginPage } from './ui';
 
 const ROOT_DOMAIN = 'nails.drave.sk';
@@ -94,7 +95,7 @@ export default {
       const slug = body.slug.toLowerCase().replace(/[^a-z0-9-]/g, '');
       if (!slug) return json({ success: false, message: 'Invalid slug' }, 400);
       const existing = await getTenantBySlug(env, slug);
-      if (existing) return json({ success: false, message: 'Slug už existuje' }, 409);
+      if (existing) return json({ success: false, message: 'Slug đã tồn tại' }, 409);
       const admin_password_hash = await hashPassword(body.password);
       const tenant = await createTenant(env, { slug, brand_name: body.brand_name, admin_password_hash });
       return json({ success: true, tenant });
@@ -133,7 +134,7 @@ export default {
     if (tenant && path === '/admin/api/login' && req.method === 'POST') {
       const { password } = await req.json<{ password: string }>().catch(() => ({ password: '' }));
       if (!password || !(await verifyPassword(password, tenant.admin_password_hash))) {
-        return json({ success: false, message: 'Nesprávne heslo' }, 401);
+        return json({ success: false, message: 'Sai mật khẩu' }, 401);
       }
       const token = await signToken(env, { role: 'tenant', tenantId: tenant.id });
       return json({ success: true, token });
@@ -152,7 +153,7 @@ export default {
     if (tenant && path === '/admin/api/services' && req.method === 'POST') {
       if (!(await requireTenantAuth(req, env, tenant.id))) return json({ success: false, message: 'Unauthorized' }, 401);
       const body = await req.json<{ name: string; price: string; icon: string }>().catch(() => null);
-      if (!body?.name || !body?.price) return json({ success: false, message: 'Missing fields' }, 400);
+      if (!body?.name || !body?.price) return json({ success: false, message: 'Thiếu thông tin' }, 400);
       const service = await createService(env, tenant.id, { name: body.name, price: body.price, icon: body.icon || '💅' });
       return json({ success: true, service });
     }
@@ -171,17 +172,17 @@ export default {
       if (!(await requireTenantAuth(req, env, tenant.id))) return json({ success: false, message: 'Unauthorized' }, 401);
       const count = await countGalleryImages(env, tenant.id);
       if (count >= MAX_GALLERY_IMAGES_PER_TENANT) {
-        return json({ success: false, message: `Max ${MAX_GALLERY_IMAGES_PER_TENANT} fotiek dosiahnutých` }, 400);
+        return json({ success: false, message: `Đã đạt tối đa ${MAX_GALLERY_IMAGES_PER_TENANT} ảnh` }, 400);
       }
       const body = await req.json<{ data: string; caption?: string }>().catch(() => null);
       const match = body?.data?.match(/^data:(image\/(?:jpeg|png|webp));base64,(.+)$/);
-      if (!match) return json({ success: false, message: 'Neplatný obrázok (len JPEG/PNG/WebP)' }, 400);
+      if (!match) return json({ success: false, message: 'Ảnh không hợp lệ (chỉ JPEG/PNG/WebP)' }, 400);
       const [, mime, b64] = match;
       const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
       // Client already compresses before upload; this is a hard server-side
       // backstop so a modified client (or bug) can't fill up R2/D1 anyway.
       if (bytes.byteLength > 4 * 1024 * 1024) {
-        return json({ success: false, message: 'Obrázok je príliš veľký (max 4MB)' }, 400);
+        return json({ success: false, message: 'Ảnh quá lớn (tối đa 4MB)' }, 400);
       }
       const ext = mime === 'image/png' ? 'png' : mime === 'image/webp' ? 'webp' : 'jpg';
       const r2Key = `${tenant.id}/${crypto.randomUUID()}.${ext}`;
@@ -203,6 +204,12 @@ export default {
     // ── Public site ──────────────────────────────────────────────────────
     if (tenant && path === '/privacy') {
       return html(renderPrivacyPage(tenant));
+    }
+    if (tenant && path === '/manifest.json') {
+      return new Response(renderManifest(tenant), { headers: { 'Content-Type': 'application/manifest+json' } });
+    }
+    if (tenant && path === '/sw.js') {
+      return new Response(renderServiceWorker(), { headers: { 'Content-Type': 'application/javascript' } });
     }
     if (tenant) {
       if (!tenant.active) return html(renderNotFound(), 404);

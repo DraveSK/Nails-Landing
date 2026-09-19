@@ -1,4 +1,5 @@
 import type { Tenant, Service, GalleryImage } from './db';
+import { renderInstallPromptScript, PWA_STYLE } from './pwa';
 
 export function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -42,6 +43,13 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${brand}</title>
 <meta name="description" content="${escapeHtml(tenant.hero_subtitle)}">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="${primary}">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="${brand}">
+${tenant.logo_data_url ? `<link rel="apple-touch-icon" href="${tenant.logo_data_url}">\n<link rel="icon" href="${tenant.logo_data_url}">` : ''}
 <style>
   :root { --primary: ${primary}; --secondary: ${secondary}; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -91,6 +99,7 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
   .booking-consent-notice button { margin-top: 12px; padding: 10px 24px; border-radius: 999px; border: none; background: var(--primary); color: #fff; font-weight: 600; cursor: pointer; }
   .footer-legal { text-align: center; margin-top: 14px; }
   .footer-legal a { font-size: .8rem; opacity: .7; margin: 0 8px; }
+${PWA_STYLE}
 </style>
 </head>
 <body>
@@ -222,6 +231,13 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
       if (!stored) banner.classList.add('show');
       else applyConsent(stored);
     })();
+  </script>
+
+  ${renderInstallPromptScript(brand)}
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() { navigator.serviceWorker.register('/sw.js').catch(function() {}); });
+    }
   </script>
 </body>
 </html>`;
