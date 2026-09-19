@@ -15,6 +15,23 @@ function jsSafe(s: string): string {
   return s.replace(/'/g, '’').replace(/"/g, '”');
 }
 
+const GALLERY_MARQUEE_STYLE = `
+  .gallery-marquee-wrap { overflow: hidden; position: relative; width: 100%; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+  .gallery-track { display: flex; gap: 14px; width: max-content; animation-name: gallery-scroll; animation-timing-function: linear; animation-iteration-count: infinite; }
+  .gallery-marquee-wrap:hover .gallery-track { animation-play-state: paused; }
+  @keyframes gallery-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .marquee-tile { flex: 0 0 auto; width: 200px; height: 200px; cursor: pointer; transition: transform .2s; }
+  .marquee-tile:hover { transform: scale(1.04); }
+  .gallery-lightbox { position: fixed; inset: 0; background: rgba(20,10,30,.92); z-index: 1000; display: none; align-items: center; justify-content: center; }
+  .gallery-lightbox.show { display: flex; }
+  .gallery-lightbox img { max-width: 88vw; max-height: 82vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+  .gallery-lightbox-close { position: absolute; top: 20px; right: 24px; background: transparent; border: none; color: #fff; font-size: 1.6rem; cursor: pointer; }
+  .gallery-lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.15); border: none; color: #fff; font-size: 2rem; width: 52px; height: 52px; border-radius: 50%; cursor: pointer; }
+  .gallery-lightbox-prev { left: 16px; }
+  .gallery-lightbox-next { right: 16px; }
+  @media (max-width: 600px) { .marquee-tile { width: 140px; height: 140px; } }
+`;
+
 // Exact original text for each of the 6 service-card slots in index.html —
 // used both to know what to replace and, when a tenant has fewer than 6
 // services, to know exactly which literal chunks to hide.
@@ -149,43 +166,45 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
   }
 
   // ── Gallery: real uploaded photos replace the decorative SVG tiles once
-  // an agency has uploaded at least one — paginated (8/page, matching the
-  // grid's 4 columns) so a full album doesn't turn into one giant scroll. ──
+  // an agency has uploaded at least one — an auto-scrolling right-to-left
+  // strip (pauses on hover, click opens a full-size lightbox) rather than
+  // paged grid pages, closer to how salons show off work on Instagram. ──
   if (gallery.length) {
     const galleryMatch = out.match(/<div class="gallery-grid">[\s\S]*?<\/div>\s*<\/section>/);
     if (galleryMatch) {
-      const PER_PAGE = 8;
-      const pageCount = Math.ceil(gallery.length / PER_PAGE);
-      const pagesHtml = Array.from({ length: pageCount }, (_, p) => {
-        const tiles = gallery.slice(p * PER_PAGE, p * PER_PAGE + PER_PAGE).map(g => `
-        <div class="gallery-tile"><img src="/img/${g.r2_key}" alt="${escapeHtml(g.caption || tenant.brand_name)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:14px;"></div>`).join('');
-        return `<div class="gallery-grid" data-gpage="${p}" style="${p === 0 ? '' : 'display:none;'}">${tiles}\n      </div>`;
-      }).join('\n');
-      const pager = pageCount > 1 ? `
-      <div class="flip-controls" id="galleryPager" style="margin-top:18px;">
-        <button id="galleryPrev" aria-label="Predchádzajúca strana">‹</button>
-        <span id="galleryIndicator">1 / ${pageCount}</span>
-        <button id="galleryNext" aria-label="Ďalšia strana">›</button>
+      const lightboxSrcs = gallery.map(g => `/img/${g.r2_key}`);
+      const tile = (g: GalleryImage, i: number) => `
+        <div class="gallery-tile marquee-tile" onclick="openGalleryLightbox(${i})"><img src="/img/${g.r2_key}" alt="${escapeHtml(g.caption || tenant.brand_name)}" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:14px;"></div>`;
+      // Doubled so the strip can loop seamlessly (scrolls exactly one
+      // full copy's width, then jumps back unnoticed since copy 2 = copy 1).
+      const tiles = gallery.map((g, i) => tile(g, i)).join('') + gallery.map((g, i) => tile(g, i)).join('');
+      const duration = Math.max(gallery.length * 4, 12);
+      out = out.replace(galleryMatch[0], `<div class="gallery-marquee-wrap">
+        <div class="gallery-track" id="galleryTrack" style="animation-duration:${duration}s;">${tiles}</div>
+      </div>
+      <div class="gallery-lightbox" id="galleryLightbox" onclick="if(event.target===this) closeGalleryLightbox()">
+        <button class="gallery-lightbox-close" onclick="closeGalleryLightbox()">✕</button>
+        <button class="gallery-lightbox-nav gallery-lightbox-prev" onclick="galleryLightboxNav(-1)">‹</button>
+        <img id="galleryLightboxImg" src="">
+        <button class="gallery-lightbox-nav gallery-lightbox-next" onclick="galleryLightboxNav(1)">›</button>
       </div>
       <script>
         (function() {
-          var pages = Array.prototype.slice.call(document.querySelectorAll('[data-gpage]'));
+          var srcs = ${JSON.stringify(lightboxSrcs)};
           var current = 0;
-          var prevBtn = document.getElementById('galleryPrev');
-          var nextBtn = document.getElementById('galleryNext');
-          var indicator = document.getElementById('galleryIndicator');
-          function update() {
-            pages.forEach(function(el, i) { el.style.display = i === current ? '' : 'none'; });
-            indicator.textContent = (current + 1) + ' / ' + pages.length;
-            prevBtn.disabled = current === 0;
-            nextBtn.disabled = current === pages.length - 1;
-          }
-          prevBtn.addEventListener('click', function() { if (current > 0) { current--; update(); } });
-          nextBtn.addEventListener('click', function() { if (current < pages.length - 1) { current++; update(); } });
-          update();
+          window.openGalleryLightbox = function(i) {
+            current = i % srcs.length;
+            document.getElementById('galleryLightboxImg').src = srcs[current];
+            document.getElementById('galleryLightbox').classList.add('show');
+          };
+          window.closeGalleryLightbox = function() { document.getElementById('galleryLightbox').classList.remove('show'); };
+          window.galleryLightboxNav = function(dir) {
+            current = (current + dir + srcs.length) % srcs.length;
+            document.getElementById('galleryLightboxImg').src = srcs[current];
+          };
         })();
-      </script>` : '';
-      out = out.replace(galleryMatch[0], `${pagesHtml}${pager}\n</section>`);
+      </script>
+</section>`);
     }
   }
 
@@ -198,7 +217,7 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="${escapeHtml(tenant.brand_name)}">
 ${tenant.logo_data_url ? `<link rel="apple-touch-icon" href="${tenant.logo_data_url}">` : ''}
-<style>${PWA_STYLE}</style>
+<style>${PWA_STYLE}${GALLERY_MARQUEE_STYLE}</style>
 </head>`);
 
   out = out.replace('© 2026', `© ${new Date().getFullYear()}`);
