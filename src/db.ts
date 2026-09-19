@@ -25,6 +25,9 @@ export interface Tenant {
   email: string;
   facebook_url: string;
   instagram_url: string;
+  tiktok_url: string;
+  youtube_url: string;
+  maps_url: string;
   calendly_url: string;
   hours_weekday: string;
   hours_saturday: string;
@@ -55,7 +58,7 @@ export const TENANT_EDITABLE_FIELDS = [
   'eyebrow_text', 'hero_title', 'hero_subtitle',
   'eyebrow_text_vi', 'eyebrow_text_en', 'hero_title_vi', 'hero_title_en', 'hero_subtitle_vi', 'hero_subtitle_en',
   'address', 'phone', 'whatsapp_number', 'email',
-  'facebook_url', 'instagram_url', 'calendly_url',
+  'facebook_url', 'instagram_url', 'tiktok_url', 'youtube_url', 'maps_url', 'calendly_url',
   'hours_weekday', 'hours_saturday', 'hours_sunday',
 ] as const;
 

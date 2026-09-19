@@ -84,13 +84,19 @@ export function tenantAdminPage(): string {
         <div><label>Địa chỉ</label><input id="address"></div>
         <div><label>Điện thoại</label><input id="phone"></div>
       </div>
+      <label>Link Google Maps (tùy chọn — dán link chia sẻ từ Google Maps để ghim đúng vị trí, nếu để trống sẽ tự tìm theo Địa chỉ)</label>
+      <input id="maps_url" placeholder="https://maps.google.com/?q=...">
       <div class="row">
         <div><label>Số WhatsApp (chỉ số)</label><input id="whatsapp_number"></div>
         <div><label>Email</label><input id="email"></div>
       </div>
       <div class="row">
-        <div><label>Facebook URL</label><input id="facebook_url"></div>
-        <div><label>Instagram URL</label><input id="instagram_url"></div>
+        <div><label>📘 Facebook URL</label><input id="facebook_url"></div>
+        <div><label>📷 Instagram URL</label><input id="instagram_url"></div>
+      </div>
+      <div class="row">
+        <div><label>🎵 TikTok URL</label><input id="tiktok_url"></div>
+        <div><label>▶️ YouTube URL</label><input id="youtube_url"></div>
       </div>
       <label>Calendly URL (đặt lịch)</label><input id="calendly_url">
       <div class="row">
@@ -152,7 +158,7 @@ export function tenantAdminPage(): string {
       if (res.status === 401) { logout(); return; }
       const data = await res.json();
       tenant = data.tenant; services = data.services;
-      for (const k of ['brand_name','color_primary','color_secondary','eyebrow_text','eyebrow_text_vi','eyebrow_text_en','hero_title','hero_title_vi','hero_title_en','hero_subtitle','hero_subtitle_vi','hero_subtitle_en','address','phone','whatsapp_number','email','facebook_url','instagram_url','calendly_url','hours_weekday','hours_saturday','hours_sunday']) {
+      for (const k of ['brand_name','color_primary','color_secondary','eyebrow_text','eyebrow_text_vi','eyebrow_text_en','hero_title','hero_title_vi','hero_title_en','hero_subtitle','hero_subtitle_vi','hero_subtitle_en','address','phone','maps_url','whatsapp_number','email','facebook_url','instagram_url','tiktok_url','youtube_url','calendly_url','hours_weekday','hours_saturday','hours_sunday']) {
         const el = document.getElementById(k); if (el) el.value = tenant[k] || '';
       }
       if (tenant.logo_data_url) { document.getElementById('logo_preview').src = tenant.logo_data_url; document.getElementById('logo_preview').style.display = 'block'; }
@@ -223,7 +229,7 @@ export function tenantAdminPage(): string {
 
     async function saveTenant() {
       const fields = {};
-      for (const k of ['brand_name','color_primary','color_secondary','eyebrow_text','eyebrow_text_vi','eyebrow_text_en','hero_title','hero_title_vi','hero_title_en','hero_subtitle','hero_subtitle_vi','hero_subtitle_en','address','phone','whatsapp_number','email','facebook_url','instagram_url','calendly_url','hours_weekday','hours_saturday','hours_sunday']) {
+      for (const k of ['brand_name','color_primary','color_secondary','eyebrow_text','eyebrow_text_vi','eyebrow_text_en','hero_title','hero_title_vi','hero_title_en','hero_subtitle','hero_subtitle_vi','hero_subtitle_en','address','phone','maps_url','whatsapp_number','email','facebook_url','instagram_url','tiktok_url','youtube_url','calendly_url','hours_weekday','hours_saturday','hours_sunday']) {
         fields[k] = document.getElementById(k).value;
       }
       const res = await fetch('/admin/api/tenant', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(fields) });

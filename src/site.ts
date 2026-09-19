@@ -58,8 +58,39 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
   if (tenant.email) {
     out = out.split('info@nailsbylinh.sk').join(jsSafe(tenant.email));
   }
-  if (tenant.facebook_url) {
-    out = out.split('https://facebook.com/nailsbylinh').join(jsSafe(tenant.facebook_url));
+  // Instagram/TikTok/YouTube didn't exist as visible elements in the
+  // original template at all (Instagram was a dead admin field) — replace
+  // the single fixed "Facebook: ..." contact line and the final-CTA's
+  // lone Facebook button with however many of the four socials are set.
+  const socialLine = out.match(/<div class="contact-line"><span class="dot"><\/span> Facebook: [^<]*<\/div>/);
+  if (socialLine) {
+    const lines = [
+      tenant.facebook_url && `<div class="contact-line"><span class="dot"></span> Facebook: ${escapeHtml(tenant.facebook_url)}</div>`,
+      tenant.instagram_url && `<div class="contact-line"><span class="dot"></span> Instagram: ${escapeHtml(tenant.instagram_url)}</div>`,
+      tenant.tiktok_url && `<div class="contact-line"><span class="dot"></span> TikTok: ${escapeHtml(tenant.tiktok_url)}</div>`,
+      tenant.youtube_url && `<div class="contact-line"><span class="dot"></span> YouTube: ${escapeHtml(tenant.youtube_url)}</div>`,
+    ].filter(Boolean).join('\n        ');
+    out = out.replace(socialLine[0], lines);
+  }
+  const finalFollowMatch = out.match(/<a class="btn btn-secondary" href="https:\/\/facebook\.com\/nailsbylinh"[\s\S]*?<\/a>/);
+  if (finalFollowMatch) {
+    const buttons = [
+      tenant.facebook_url && `<a class="btn btn-secondary" href="${escapeHtml(tenant.facebook_url)}" target="_blank"><span>📘 Facebook</span></a>`,
+      tenant.instagram_url && `<a class="btn btn-secondary" href="${escapeHtml(tenant.instagram_url)}" target="_blank"><span>📷 Instagram</span></a>`,
+      tenant.tiktok_url && `<a class="btn btn-secondary" href="${escapeHtml(tenant.tiktok_url)}" target="_blank"><span>🎵 TikTok</span></a>`,
+      tenant.youtube_url && `<a class="btn btn-secondary" href="${escapeHtml(tenant.youtube_url)}" target="_blank"><span>▶️ YouTube</span></a>`,
+    ].filter(Boolean).join('\n    ');
+    out = out.replace(finalFollowMatch[0], buttons);
+  }
+  if (tenant.maps_url) {
+    out = out.replace(
+      /href="https:\/\/www\.google\.com\/maps\/dir\/\?api=1&destination=[^"]*"/,
+      `href="${escapeHtml(tenant.maps_url)}"`
+    );
+    out = out.replace(
+      /href="https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=[^"]*"/,
+      `href="${escapeHtml(tenant.maps_url)}"`
+    );
   }
   if (tenant.calendly_url) {
     out = out.split('https://calendly.com/dravesk/30mins').join(jsSafe(tenant.calendly_url));
