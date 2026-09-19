@@ -384,7 +384,7 @@ export function tenantAdminPage(brandName: string, faviconUrl?: string): string 
 
 export function superAdminLoginPage(): string {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Super Admin</title><style>${SHARED_STYLE}</style></head><body>
+  <title>Super Admin</title><link rel="icon" href="/logo.png"><style>${SHARED_STYLE}</style></head><body>
   <div class="login-box card">
     <h2>Super Admin</h2>
     <div id="msg"></div>
@@ -406,7 +406,7 @@ export function superAdminLoginPage(): string {
 
 export function superAdminPage(): string {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Super Admin</title><style>${SHARED_STYLE}</style></head><body>
+  <title>Super Admin</title><link rel="icon" href="/logo.png"><style>${SHARED_STYLE}</style></head><body>
   <div class="bar"><b>Super Admin — Quản lý đại lý</b><button onclick="logout()">Đăng xuất</button></div>
   <div class="wrap">
     <div id="msg"></div>
