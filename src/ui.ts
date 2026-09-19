@@ -93,8 +93,11 @@ export function tenantAdminPage(brandName: string, faviconUrl?: string, themeCol
         <div><label>Màu chính</label><input id="color_primary" type="color"></div>
         <div><label>Màu phụ</label><input id="color_secondary" type="color"></div>
       </div>
-      <label>Logo</label><input id="logo_file" type="file" accept="image/*">
-      <img id="logo_preview" style="max-width:80px;max-height:80px;border-radius:50%;margin-top:8px;display:none;">
+      <label>Logo</label>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <img id="logo_preview" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid #eee;background:#fafafa;display:none;flex-shrink:0;">
+        <input id="logo_file" type="file" accept="image/*" style="flex:1;min-width:180px;">
+      </div>
       <p style="font-size:.8rem;color:#888;margin-top:16px;">Site có nút chuyển 🇸🇰 🇻🇳 🇬🇧 — nhập cả 3 để khách xem đúng ngôn ngữ khi họ đổi. Bỏ trống VI/EN thì sẽ tự dùng bản SK.</p>
       <label>Dòng chữ nhỏ phía trên tiêu đề (eyebrow) 🇸🇰</label><input id="eyebrow_text">
       <label>Eyebrow 🇻🇳</label><input id="eyebrow_text_vi">
@@ -191,7 +194,11 @@ export function tenantAdminPage(brandName: string, faviconUrl?: string, themeCol
       for (const k of ['brand_name','color_primary','color_secondary','eyebrow_text','eyebrow_text_vi','eyebrow_text_en','hero_title','hero_title_vi','hero_title_en','hero_subtitle','hero_subtitle_vi','hero_subtitle_en','address','phone','maps_url','whatsapp_number','email','facebook_url','instagram_url','tiktok_url','youtube_url','calendly_url','hours_weekday','hours_saturday','hours_sunday']) {
         const el = document.getElementById(k); if (el) el.value = tenant[k] || '';
       }
-      if (tenant.logo_data_url) { document.getElementById('logo_preview').src = tenant.logo_data_url; document.getElementById('logo_preview').style.display = 'block'; }
+      // Always show the logo actually in use right now — even before the
+      // tenant uploads their own, the site is already showing the shared
+      // /logo.png default, so the preview shouldn't just sit blank.
+      document.getElementById('logo_preview').src = tenant.logo_data_url || '/logo.png';
+      document.getElementById('logo_preview').style.display = 'block';
       renderServices();
     }
 
