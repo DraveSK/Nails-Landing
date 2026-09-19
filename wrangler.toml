@@ -1,0 +1,18 @@
+name = "nails"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+rules = [
+  { type = "Text", globs = ["**/*.html"], fallthrough = true }
+]
+
+routes = [
+  { pattern = "nails.drave.sk", custom_domain = true }
+]
+
+# og-image.jpg (referenced only by <meta property="og:image">, not visibly
+# used on the page itself) lives here — Cloudflare serves anything in this
+# directory directly, falling through to the Worker script for everything
+# else (the HTML response).
+[assets]
+directory = "./public"
