@@ -135,12 +135,50 @@ export function tenantAdminPage(): string {
       renderServices();
     }
 
+    let editingServiceId = null;
+
     function renderServices() {
       const tbody = document.querySelector('#svc_table tbody');
-      tbody.innerHTML = services.map(s => \`<tr>
-        <td>\${s.icon}</td><td>\${s.name}<br><span style="color:#888;font-size:.8rem;">\${s.description || ''}</span></td><td>\${s.price}</td>
-        <td><button class="danger" onclick="deleteService('\${s.id}')">Xóa</button></td>
-      </tr>\`).join('');
+      tbody.innerHTML = services.map(s => {
+        if (s.id === editingServiceId) {
+          return \`<tr>
+            <td><input id="edit_icon" value="\${s.icon}" style="width:50px;"></td>
+            <td><input id="edit_name" value="\${s.name}"><br><input id="edit_desc" value="\${s.description || ''}" placeholder="Mô tả ngắn" style="margin-top:4px;"></td>
+            <td><input id="edit_price" value="\${s.price}" style="width:80px;"></td>
+            <td>
+              <button class="primary" style="padding:6px 12px;margin-top:0;" onclick="saveService('\${s.id}')">Lưu</button>
+              <button class="secondary" onclick="cancelEditService()">Hủy</button>
+            </td>
+          </tr>\`;
+        }
+        return \`<tr>
+          <td>\${s.icon}</td><td>\${s.name}<br><span style="color:#888;font-size:.8rem;">\${s.description || ''}</span></td><td>\${s.price}</td>
+          <td>
+            <button class="secondary" onclick="editService('\${s.id}')">Sửa</button>
+            <button class="danger" onclick="deleteService('\${s.id}')">Xóa</button>
+          </td>
+        </tr>\`;
+      }).join('');
+    }
+
+    function editService(id) { editingServiceId = id; renderServices(); }
+    function cancelEditService() { editingServiceId = null; renderServices(); }
+
+    async function saveService(id) {
+      const name = document.getElementById('edit_name').value.trim();
+      const price = document.getElementById('edit_price').value.trim();
+      const icon = document.getElementById('edit_icon').value.trim() || '💅';
+      const description = document.getElementById('edit_desc').value.trim();
+      if (!name || !price) { showMsg('Vui lòng điền tên và giá', false); return; }
+      const res = await fetch('/admin/api/services/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ name, price, icon, description }) });
+      const data = await res.json();
+      if (data.success) {
+        const s = services.find(x => x.id === id);
+        Object.assign(s, { name, price, icon, description });
+        editingServiceId = null;
+        renderServices();
+        showMsg('Đã lưu ✅', true);
+      } else showMsg(data.message || 'Có lỗi xảy ra', false);
     }
 
     async function saveTenant() {
