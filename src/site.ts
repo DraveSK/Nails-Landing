@@ -31,7 +31,7 @@ function jsSafe(s: string): string {
 // submitted via a raw API call — never trust it's actually that shape.
 // Reject anything that isn't a plausible base64 image data URL rather
 // than interpolating it unescaped into src="...".
-function safeLogoUrl(url: string | null): string | null {
+export function safeLogoUrl(url: string | null): string | null {
   if (!url) return null;
   return /^data:image\/(png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=]+$/.test(url) ? url : null;
 }

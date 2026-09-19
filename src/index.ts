@@ -10,10 +10,11 @@ import {
   getTenantBySlug, getTenantByCustomDomain, getTenantById, listTenants, listServices,
   updateTenantFields, updateTenantAdminFields, createTenant, createService, updateService, deleteService,
   getSuperAdminPasswordHash, updateSuperAdminPasswordHash, updateTenantPasswordHash,
+  isLoginLocked, recordFailedLogin, clearLoginAttempts,
   listGalleryImages, addGalleryImage, getGalleryImage, deleteGalleryImage,
   countGalleryImages, MAX_GALLERY_IMAGES_PER_TENANT,
 } from './db';
-import { renderTenantSite, renderNotFound } from './site';
+import { renderTenantSite, renderNotFound, safeLogoUrl } from './site';
 import { renderManifest, renderServiceWorker } from './pwa';
 import { loginPage, tenantAdminPage, superAdminPage, superAdminLoginPage } from './ui';
 
@@ -101,11 +102,17 @@ export default {
       return html(superAdminPage());
     }
     if (path === '/super-admin/api/login' && req.method === 'POST') {
+      const attemptKey = `super:${req.headers.get('CF-Connecting-IP') || 'unknown'}`;
+      if (await isLoginLocked(env, attemptKey)) {
+        return json({ success: false, message: 'Quá nhiều lần sai — thử lại sau 15 phút' }, 429);
+      }
       const { password } = await req.json<{ password: string }>().catch(() => ({ password: '' }));
       const hash = await getSuperAdminPasswordHash(env);
       if (!hash || !password || !(await verifyPassword(password, hash))) {
+        await recordFailedLogin(env, attemptKey);
         return json({ success: false, message: 'Sai mật khẩu' }, 401);
       }
+      await clearLoginAttempts(env, attemptKey);
       // Long-lived — this is meant to be installed as a PWA on the
       // operator's own phone, where re-typing a password every 7 days
       // defeats the point.
@@ -161,14 +168,21 @@ export default {
     let tenant = slug ? await getTenantBySlug(env, slug) : await getTenantByCustomDomain(env, host.split(':')[0]);
 
     // ── Per-tenant admin (only reachable on a resolved tenant host) ────────
+    // Validated here once — logo_data_url is stored exactly as submitted
+    // via a raw API call, never guaranteed to actually be the
+    // data:image/...;base64,... shape the admin's own upload flow
+    // produces, and it lands unescaped in href="..."/src="..." attributes
+    // below and in ui.ts, so an unvalidated value could break out of them.
+    const adminIcon = tenant ? (safeLogoUrl(tenant.logo_data_url) || '/logo.png') : '/logo.png';
     if (tenant && (path === '/admin' || path === '/admin/')) {
-      return html(loginPage(`${tenant.brand_name} — Admin`, '/admin/api/login', 'tenant_token', '/admin/app', tenant.logo_data_url || '/logo.png', tenant.brand_name, tenant.color_primary));
+      return html(loginPage(`${tenant.brand_name} — Admin`, '/admin/api/login', 'tenant_token', '/admin/app', adminIcon, tenant.brand_name, tenant.color_primary));
     }
     if (tenant && path === '/admin/app') {
-      return html(tenantAdminPage(tenant.brand_name, tenant.logo_data_url || '/logo.png', tenant.color_primary));
+      return html(tenantAdminPage(tenant.brand_name, adminIcon, tenant.color_primary));
     }
     if (tenant && path === '/admin/manifest.json') {
-      const icon = tenant.logo_data_url || '/logo.png';
+      const mimeMatch = adminIcon.match(/^data:(image\/[a-z]+);base64,/);
+      const mime = mimeMatch ? mimeMatch[1] : 'image/png';
       return new Response(JSON.stringify({
         name: `${tenant.brand_name} — Admin`,
         short_name: 'Admin',
@@ -178,16 +192,22 @@ export default {
         background_color: '#ffffff',
         theme_color: tenant.color_primary || '#FF3D8A',
         icons: [
-          { src: icon, sizes: '192x192', type: 'image/png' },
-          { src: icon, sizes: '512x512', type: 'image/png' },
+          { src: adminIcon, sizes: '192x192', type: mime },
+          { src: adminIcon, sizes: '512x512', type: mime },
         ],
       }), { headers: { 'Content-Type': 'application/manifest+json' } });
     }
     if (tenant && path === '/admin/api/login' && req.method === 'POST') {
+      const attemptKey = `tenant:${tenant.id}:${req.headers.get('CF-Connecting-IP') || 'unknown'}`;
+      if (await isLoginLocked(env, attemptKey)) {
+        return json({ success: false, message: 'Quá nhiều lần sai — thử lại sau 15 phút' }, 429);
+      }
       const { password } = await req.json<{ password: string }>().catch(() => ({ password: '' }));
       if (!password || !(await verifyPassword(password, tenant.admin_password_hash))) {
+        await recordFailedLogin(env, attemptKey);
         return json({ success: false, message: 'Sai mật khẩu' }, 401);
       }
+      await clearLoginAttempts(env, attemptKey);
       const token = await signToken(env, { role: 'tenant', tenantId: tenant.id }, ADMIN_SESSION_TTL);
       return json({ success: true, token });
     }

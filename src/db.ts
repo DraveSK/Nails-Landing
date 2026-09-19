@@ -206,3 +206,28 @@ export async function updateSuperAdminPasswordHash(env: Env, hash: string): Prom
 export async function updateTenantPasswordHash(env: Env, tenantId: string, hash: string): Promise<void> {
   await env.DB.prepare("UPDATE tenants SET admin_password_hash = ?, updated_at = datetime('now') WHERE id = ?").bind(hash, tenantId).run();
 }
+
+const LOGIN_ATTEMPT_LIMIT = 10;
+const LOGIN_ATTEMPT_WINDOW_MINUTES = 15;
+
+// Returns true if this key (scope + IP, e.g. "tenant:<id>:1.2.3.4") is
+// currently locked out from further login attempts.
+export async function isLoginLocked(env: Env, key: string): Promise<boolean> {
+  const row = await env.DB.prepare(
+    `SELECT count, window_start FROM login_attempts WHERE key = ? AND window_start > datetime('now', ?)`
+  ).bind(key, `-${LOGIN_ATTEMPT_WINDOW_MINUTES} minutes`).first<{ count: number }>();
+  return !!row && row.count >= LOGIN_ATTEMPT_LIMIT;
+}
+
+export async function recordFailedLogin(env: Env, key: string): Promise<void> {
+  await env.DB.prepare(
+    `INSERT INTO login_attempts (key, count, window_start) VALUES (?, 1, datetime('now'))
+     ON CONFLICT(key) DO UPDATE SET
+       count = CASE WHEN window_start > datetime('now', ?) THEN count + 1 ELSE 1 END,
+       window_start = CASE WHEN window_start > datetime('now', ?) THEN window_start ELSE datetime('now') END`
+  ).bind(key, `-${LOGIN_ATTEMPT_WINDOW_MINUTES} minutes`, `-${LOGIN_ATTEMPT_WINDOW_MINUTES} minutes`).run();
+}
+
+export async function clearLoginAttempts(env: Env, key: string): Promise<void> {
+  await env.DB.prepare(`DELETE FROM login_attempts WHERE key = ?`).bind(key).run();
+}

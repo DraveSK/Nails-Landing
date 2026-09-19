@@ -1,4 +1,5 @@
 import type { Tenant } from './db';
+import { safeLogoUrl } from './site';
 
 // One manifest per tenant, generated on the fly from their own D1 row — no
 // static file per agency needed. The logo (already stored as a base64
@@ -6,7 +7,13 @@ import type { Tenant } from './db';
 // happily scale a single square image for both required sizes, so this
 // stays "1 Worker + 1 D1" with no extra asset pipeline.
 export function renderManifest(tenant: Tenant): string {
-  const icon = tenant.logo_data_url || DEFAULT_ICON;
+  // Same fallback as everywhere else on the site (nav, favicon, flip-book
+  // cover) — a tenant who hasn't uploaded their own logo yet should still
+  // get the real shared logo here, not a blank placeholder pixel that
+  // doesn't match what they see anywhere else. safeLogoUrl also rejects
+  // anything that isn't actually shaped like a data:image/...;base64,...
+  // string, since this is stored exactly as submitted via a raw API call.
+  const icon = safeLogoUrl(tenant.logo_data_url) || '/logo.png';
   // Read the real MIME off the data: URL rather than assuming — a
   // mismatched "type" makes some browsers silently drop the icon.
   const mimeMatch = icon.match(/^data:(image\/[a-z]+);base64,/);
@@ -30,13 +37,6 @@ export function renderManifest(tenant: Tenant): string {
   };
   return JSON.stringify(manifest);
 }
-
-// Same 1x1 pink pixel PNG for every tenant that never got around to
-// uploading a logo — a manifest with no icons at all is silently ignored
-// by installability checks on some browsers, so this is a safe fallback,
-// not a real placeholder logo (the site nav/hero just omit the img tag
-// when there's no logo_data_url).
-const DEFAULT_ICON = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
 
 // Minimal service worker — its only job is to satisfy the "has a fetch
 // handler" installability requirement most browsers (Chrome/Android in
