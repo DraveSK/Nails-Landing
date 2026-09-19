@@ -45,7 +45,12 @@ const SHARED_STYLE = `
   .msg.ok { background: #e3f7e9; color: #1a7a3a; }
   .msg.err { background: #fde4e4; color: #a30000; }
   .login-box { max-width: 360px; margin: 90px auto; }
+  .tab-nav { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 10px 20px; background: #fff; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 40; }
+  .tab-btn { flex: 0 0 auto; background: #f6f5fa; border: none; padding: 8px 14px; border-radius: 999px; font-size: .85rem; font-weight: 600; color: #555; cursor: pointer; white-space: nowrap; }
+  .tab-btn.active { background: #FF3D8A; color: #fff; }
   @media (max-width: 560px) {
+    .tab-nav { padding: 8px 12px; }
+    .tab-btn { padding: 7px 12px; font-size: .8rem; }
     .row { grid-template-columns: 1fr; }
     .wrap { margin: 16px auto; padding: 0 14px; }
     .login-box { margin: 40px auto; max-width: 92vw; }
@@ -83,10 +88,17 @@ export function tenantAdminPage(brandName: string, faviconUrl?: string, themeCol
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHtml(brandName)} — Admin</title>${faviconUrl ? `<link rel="icon" href="${faviconUrl}">` : ''}${adminPwaHead('/admin/manifest.json', themeColor || '#FF3D8A')}<style>${SHARED_STYLE}</style></head><body>
   <div class="bar"><b>Admin — Quản lý trang</b><button onclick="logout()">Đăng xuất</button></div>
+  <div class="tab-nav">
+    <button class="tab-btn active" data-panel="interface" onclick="showPanel('interface')">🎨 Giao diện</button>
+    <button class="tab-btn" data-panel="contact" onclick="showPanel('contact')">📞 Liên hệ</button>
+    <button class="tab-btn" data-panel="gallery" onclick="showPanel('gallery')">🖼️ Album ảnh</button>
+    <button class="tab-btn" data-panel="services" onclick="showPanel('services')">💅 Dịch vụ</button>
+    <button class="tab-btn" data-panel="security" onclick="showPanel('security')">🔒 Mật khẩu</button>
+  </div>
   <div class="wrap">
     <div id="msg"></div>
 
-    <div class="card">
+    <div class="card tab-panel" data-panel="interface">
       <h2>Giao diện và tiêu đề</h2>
       <label>Tên salon</label><input id="brand_name">
       <div class="row">
@@ -111,7 +123,7 @@ export function tenantAdminPage(brandName: string, faviconUrl?: string, themeCol
       <button class="primary" onclick="saveTenant()">Lưu</button>
     </div>
 
-    <div class="card">
+    <div class="card tab-panel" data-panel="contact" style="display:none;">
       <h2>Liên hệ và chân trang</h2>
       <div class="row">
         <div><label>Địa chỉ</label><input id="address"></div>
@@ -140,14 +152,14 @@ export function tenantAdminPage(brandName: string, faviconUrl?: string, themeCol
       <button class="primary" onclick="saveTenant()">Lưu</button>
     </div>
 
-    <div class="card">
+    <div class="card tab-panel" data-panel="gallery" style="display:none;">
       <h2>Album ảnh (nội thất, sản phẩm)</h2>
       <p style="font-size:.85rem;color:#666;margin-bottom:10px;">Ảnh sẽ hiển thị trên trang dưới dạng cuốn sách để khách lật xem. Ảnh tải lên sẽ tự động được nén nhỏ lại.</p>
       <input id="gallery_file" type="file" accept="image/*" multiple>
       <div id="gallery_grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-top:14px;"></div>
     </div>
 
-    <div class="card">
+    <div class="card tab-panel" data-panel="services" style="display:none;">
       <h2>Bảng giá dịch vụ</h2>
       <div class="table-wrap"><table id="svc_table"><thead><tr><th>Icon</th><th>Tên</th><th>Giá</th><th></th></tr></thead><tbody></tbody></table></div>
       <div class="row" style="margin-top:14px;">
@@ -169,7 +181,7 @@ export function tenantAdminPage(brandName: string, faviconUrl?: string, themeCol
       <button class="primary" onclick="addService()">Thêm dịch vụ</button>
     </div>
 
-    <div class="card">
+    <div class="card tab-panel" data-panel="security" style="display:none;">
       <h2>Đổi mật khẩu đăng nhập</h2>
       <label>Mật khẩu hiện tại</label><input id="cur_pw" type="password">
       <label>Mật khẩu mới</label><input id="new_pw" type="password">
@@ -185,6 +197,12 @@ export function tenantAdminPage(brandName: string, faviconUrl?: string, themeCol
     function authHeaders() { return { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }; }
     function showMsg(text, ok) { document.getElementById('msg').innerHTML = '<div class="msg ' + (ok ? 'ok' : 'err') + '">' + text + '</div>'; setTimeout(() => document.getElementById('msg').innerHTML = '', 3000); }
     function logout() { localStorage.removeItem('tenant_token'); location.href = '/admin'; }
+
+    function showPanel(name) {
+      document.querySelectorAll('.tab-panel').forEach(el => { el.style.display = el.dataset.panel === name ? '' : 'none'; });
+      document.querySelectorAll('.tab-btn').forEach(el => { el.classList.toggle('active', el.dataset.panel === name); });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
 
     async function load() {
       const res = await fetch('/admin/api/me', { headers: authHeaders() });
