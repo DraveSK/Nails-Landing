@@ -419,7 +419,8 @@ export function superAdminPage(): string {
     </div>
     <div class="card">
       <h2>Danh sách đại lý</h2>
-      <table id="tenants_table"><thead><tr><th>Slug</th><th>Tên</th><th>Trạng thái</th><th></th></tr></thead><tbody></tbody></table>
+      <p style="font-size:.8rem;color:#888;">Domain riêng: khách đổi nameserver domain của họ sang Cloudflare (Add a Site), đợi zone Active, rồi dán domain vào đây — báo tôi để tôi thêm Workers Route trỏ domain đó vào Worker "nails".</p>
+      <table id="tenants_table"><thead><tr><th>Slug</th><th>Tên</th><th>Domain riêng</th><th>Trạng thái</th><th></th></tr></thead><tbody></tbody></table>
     </div>
     <div class="card">
       <h2>Đổi mật khẩu Super Admin</h2>
@@ -442,9 +443,21 @@ export function superAdminPage(): string {
       const tbody = document.querySelector('#tenants_table tbody');
       tbody.innerHTML = data.tenants.map(t => \`<tr>
         <td>\${t.slug}.nails.drave.sk</td><td>\${t.brand_name}</td>
+        <td>
+          <input id="domain_\${t.id}" value="\${t.custom_domain || ''}" placeholder="vd: salonlinh.sk" style="width:150px;">
+          <button class="secondary" style="padding:4px 10px;margin-left:4px;" onclick="saveDomain('\${t.id}')">Lưu</button>
+        </td>
         <td>\${t.active ? '✅ Hoạt động' : '⏸️ Tạm dừng'}</td>
         <td><button class="secondary" onclick="toggleActive('\${t.id}', \${t.active ? 0 : 1})">\${t.active ? 'Tạm dừng' : 'Kích hoạt'}</button></td>
       </tr>\`).join('');
+    }
+
+    async function saveDomain(id) {
+      const custom_domain = document.getElementById('domain_' + id).value.trim().toLowerCase() || null;
+      const res = await fetch('/super-admin/api/tenants/' + id, { method: 'PUT', headers: authHeaders(), body: JSON.stringify({ custom_domain }) });
+      const data = await res.json();
+      if (data.success) showMsg(custom_domain ? 'Đã lưu domain — nhắn Claude thêm Workers Route cho "' + custom_domain + '" nhé ✅' : 'Đã gỡ domain riêng', true);
+      else showMsg(data.message || 'Có lỗi xảy ra', false);
     }
 
     async function createTenant() {

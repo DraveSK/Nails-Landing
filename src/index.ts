@@ -78,7 +78,7 @@ export default {
       const { password } = await req.json<{ password: string }>().catch(() => ({ password: '' }));
       const hash = await getSuperAdminPasswordHash(env);
       if (!hash || !password || !(await verifyPassword(password, hash))) {
-        return json({ success: false, message: 'Nesprávne heslo' }, 401);
+        return json({ success: false, message: 'Sai mật khẩu' }, 401);
       }
       const token = await signToken(env, { role: 'super' });
       return json({ success: true, token });
@@ -116,7 +116,13 @@ export default {
     if (superTenantMatch && req.method === 'PUT') {
       if (!(await requireSuperAuth(req, env))) return json({ success: false, message: 'Unauthorized' }, 401);
       const fields = await req.json<Record<string, any>>().catch(() => ({}));
-      await updateTenantAdminFields(env, superTenantMatch[1], fields);
+      try {
+        await updateTenantAdminFields(env, superTenantMatch[1], fields);
+      } catch (e: any) {
+        const msg = String(e?.message || '');
+        if (msg.includes('UNIQUE')) return json({ success: false, message: 'Domain này đã được gán cho đại lý khác' }, 409);
+        throw e;
+      }
       return json({ success: true });
     }
 
