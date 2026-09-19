@@ -76,18 +76,13 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
     out = out.split('info@nailsbylinh.sk').join(jsSafe(tenant.email));
   }
   // Instagram/TikTok/YouTube didn't exist as visible elements in the
-  // original template at all (Instagram was a dead admin field) — replace
-  // the single fixed "Facebook: ..." contact line and the final-CTA's
-  // lone Facebook button with however many of the four socials are set.
-  const socialLine = out.match(/<div class="contact-line"><span class="dot"><\/span> Facebook: [^<]*<\/div>/);
+  // original template at all (Instagram was a dead admin field). The
+  // fixed "Facebook: ..." contact line is dropped entirely rather than
+  // turned into a list of social lines — the icon buttons down in the
+  // final-CTA section are enough, no need to repeat the links as text too.
+  const socialLine = out.match(/\s*<div class="contact-line"><span class="dot"><\/span> Facebook: [^<]*<\/div>/);
   if (socialLine) {
-    const lines = [
-      tenant.facebook_url && `<div class="contact-line"><span class="dot"></span> Facebook: ${escapeHtml(tenant.facebook_url)}</div>`,
-      tenant.instagram_url && `<div class="contact-line"><span class="dot"></span> Instagram: ${escapeHtml(tenant.instagram_url)}</div>`,
-      tenant.tiktok_url && `<div class="contact-line"><span class="dot"></span> TikTok: ${escapeHtml(tenant.tiktok_url)}</div>`,
-      tenant.youtube_url && `<div class="contact-line"><span class="dot"></span> YouTube: ${escapeHtml(tenant.youtube_url)}</div>`,
-    ].filter(Boolean).join('\n        ');
-    out = out.replace(socialLine[0], lines);
+    out = out.replace(socialLine[0], '');
   }
   const finalFollowMatch = out.match(/<a class="btn btn-secondary" href="https:\/\/facebook\.com\/nailsbylinh"[\s\S]*?<\/a>/);
   if (finalFollowMatch) {
