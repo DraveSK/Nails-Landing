@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Nails by Linh – Nail Salón Bratislava | Gél, Akryl, Manikúra, Pedikúra</title>
+<meta name="description" content="Nails by Linh – profesionálny nail salón v Bratislave. Gélové a akrylové nechty, manikúra, pedikúra, nail art. Rezervujte si termín cez WhatsApp ešte dnes.">
+<link rel="canonical" href="https://nails.drave.sk/">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph / Facebook / Zalo -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nails.drave.sk/">
+<meta property="og:site_name" content="Nails by Linh">
+<meta property="og:title" content="Nails by Linh – Nail Salón Bratislava">
+<meta property="og:description" content="Gélové a akrylové nechty, manikúra, pedikúra, nail art. Rezervujte si termín cez WhatsApp ešte dnes.">
+<meta property="og:image" content="https://nails.drave.sk/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Nails by Linh – Nail Salón Bratislava">
+<meta property="og:locale" content="sk_SK">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nails by Linh – Nail Salón Bratislava">
+<meta name="twitter:description" content="Gélové a akrylové nechty, manikúra, pedikúra, nail art. Rezervujte si termín cez WhatsApp ešte dnes.">
+<meta name="twitter:image" content="https://nails.drave.sk/og-image.jpg">
+
+<meta name="theme-color" content="#FF3D8A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23FF3D8A'/%3E%3Ctext x='50' y='66' font-size='54' text-anchor='middle'%3E%F0%9F%92%85%3C/text%3E%3C/svg%3E">
+
+<!-- Calendly: powers the "Book online" button below, syncing bookings straight into the
+     salon owner's Google Calendar. Setup: owner creates a free account at calendly.com,
+     connects their Gmail/Google Calendar, then you replace the demo URL
+     'https://calendly.com/dravesk/30mins' (search this file) with their real Calendly link. -->
+<link rel="preconnect" href="https://calendly.com">
+<link rel="preconnect" href="https://assets.calendly.com">
+<link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+<script src="https://assets.calendly.com/assets/external/widget.js" defer></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
+  :root{
+    --hotpink:#FF3D8A;
+    --purple:#8B2FF0;
+    --yellow:#FFD400;
+    --teal:#00D9C0;
+    --orange:#FF7A3D;
+    --ink:#2A1240;
+    --paper:#FFF9F4;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Nunito',sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{font-family:'Baloo 2',sans-serif;font-weight:700;}
+  a{color:inherit;text-decoration:none;}
+
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px max(6vw, calc((100% - 1400px) / 2));
+    background:rgba(255,249,244,.85);
+    backdrop-filter:blur(8px);
+  }
+  .nav .logo{font-family:'Baloo 2',sans-serif;font-size:24px;font-weight:800;color:var(--ink);}
+  .nav .logo span{color:var(--hotpink);}
+  .nav-right{display:flex;align-items:center;gap:14px;}
+
+  .lang-switch{position:relative;}
+  .lang-toggle{
+    display:flex;align-items:center;gap:6px;
+    background:#fff;border:none;cursor:pointer;
+    padding:9px 14px;border-radius:999px;
+    box-shadow:0 4px 14px rgba(42,18,64,.12);
+    font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;color:var(--ink);
+  }
+  .lang-toggle .globe{font-size:16px;}
+  .lang-dropdown{
+    position:absolute;top:calc(100% + 8px);right:0;
+    background:#fff;border-radius:16px;padding:6px;min-width:130px;
+    box-shadow:0 14px 30px rgba(42,18,64,.2);
+    display:flex;flex-direction:column;gap:2px;
+    opacity:0;visibility:hidden;transform:translateY(-6px);
+    transition:all .18s ease;z-index:60;
+  }
+  .lang-switch.open .lang-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+  .lang-dropdown button{
+    border:none;background:transparent;cursor:pointer;text-align:left;
+    font-family:'Nunito',sans-serif;font-weight:700;font-size:13.5px;color:var(--ink);
+    padding:9px 12px;border-radius:10px;transition:background .15s ease;
+  }
+  .lang-dropdown button:hover{background:rgba(139,47,240,.08);}
+  .lang-dropdown button.active{
+    background:linear-gradient(135deg,var(--hotpink),var(--purple));color:#fff;
+  }
+
+  .nav-cta{
+    background:linear-gradient(135deg,var(--hotpink),var(--purple));
+    color:#fff;padding:11px 24px;border-radius:999px;font-weight:700;font-size:14px;
+    box-shadow:0 6px 18px rgba(139,47,240,.35);
+  }
+
+  .hero{
+    min-height:96vh;position:relative;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:130px max(6vw, calc((100% - 1400px) / 2)) 60px;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255,61,138,.35), transparent 45%),
+      radial-gradient(circle at 85% 15%, rgba(139,47,240,.32), transparent 45%),
+      radial-gradient(circle at 75% 85%, rgba(0,217,192,.28), transparent 45%),
+      radial-gradient(circle at 20% 90%, rgba(255,212,0,.3), transparent 40%),
+      var(--paper);
+  }
+  .hero-inner{
+    position:relative;z-index:1;
+    display:flex;align-items:center;justify-content:space-between;gap:50px;flex-wrap:wrap;
+  }
+  .hero-left{flex:1 1 460px;max-width:600px;}
+  .hero-right{flex:1 1 380px;display:flex;justify-content:center;align-items:center;}
+  .sparkle{position:absolute;border-radius:50%;background:#fff;opacity:0;pointer-events:none;z-index:0;
+    animation:twinkle 3.4s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:0;transform:scale(.6);}50%{opacity:.9;transform:scale(1);}}
+  .blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.9;z-index:0;}
+  .blob1{width:120px;height:150px;background:linear-gradient(160deg,var(--hotpink),var(--orange));top:14%;right:9%;border-radius:50% 50% 45% 55%/55% 45% 55% 45%;transform:rotate(-18deg);box-shadow:0 20px 40px rgba(255,61,138,.35);}
+  .blob2{width:80px;height:100px;background:linear-gradient(160deg,var(--teal),var(--purple));bottom:16%;right:20%;border-radius:50% 50% 45% 55%/55% 45% 55% 45%;transform:rotate(12deg);box-shadow:0 20px 40px rgba(0,217,192,.35);}
+  .blob3{width:60px;height:76px;background:linear-gradient(160deg,var(--yellow),var(--hotpink));top:56%;right:4%;border-radius:50% 50% 45% 55%/55% 45% 55% 45%;transform:rotate(-8deg);box-shadow:0 16px 30px rgba(255,212,0,.35);}
+
+  .eyebrow{
+    display:inline-block;font-size:14px;font-weight:800;letter-spacing:.03em;
+    background:var(--ink);color:#fff;padding:8px 18px;border-radius:999px;
+    margin-bottom:22px;position:relative;z-index:1;width:fit-content;
+  }
+  .hero h1{
+    font-size:clamp(44px,7.5vw,92px);line-height:1;max-width:14ch;margin-bottom:22px;position:relative;z-index:1;
+  }
+  .hero h1 .grad{
+    background:linear-gradient(100deg,var(--hotpink),var(--purple) 55%,var(--teal));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p.lede{
+    font-size:19px;font-weight:600;max-width:44ch;color:rgba(42,18,64,.75);margin-bottom:36px;position:relative;z-index:1;
+  }
+  .cta-row{display:flex;flex-wrap:wrap;gap:14px;position:relative;z-index:1;}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:17px 30px;border-radius:999px;font-size:16px;font-weight:800;
+    transition:transform .2s ease;
+  }
+  .btn:hover{transform:translateY(-3px) scale(1.02);}
+  .btn-primary{background:#25D366;color:#fff;box-shadow:0 12px 26px rgba(37,211,102,.4);}
+  .btn-secondary{background:#fff;color:var(--ink);box-shadow:0 8px 20px rgba(42,18,64,.14);}
+  .btn-calendar{
+    background:linear-gradient(135deg,#4285F4,#34A853);color:#fff;
+    box-shadow:0 12px 26px rgba(66,133,244,.35);
+  }
+  .calendar-hint{
+    font-size:13px;font-weight:600;color:rgba(255,255,255,.65);margin-top:14px;max-width:38ch;
+  }
+
+  .swatches{display:flex;gap:12px;margin-top:50px;flex-wrap:wrap;position:relative;z-index:1;}
+  .swatch{
+    padding:12px 20px;border-radius:999px;font-size:13px;font-weight:800;color:#fff;
+    text-transform:uppercase;letter-spacing:.02em;box-shadow:0 8px 18px rgba(0,0,0,.12);
+  }
+  .swatch:nth-child(1){background:var(--hotpink);}
+  .swatch:nth-child(2){background:var(--purple);}
+  .swatch:nth-child(3){background:var(--teal);color:var(--ink);}
+  .swatch:nth-child(4){background:var(--orange);}
+
+  /* ===== SERVICE ORBIT WHEEL ===== */
+  .wheel-wrap{
+    --wheel-radius:155px;
+    --center-size:150px;
+    --face-size:86px;
+    position:relative;
+    width:380px;height:380px;max-width:100%;
+  }
+  .wheel-wrap:hover .wheel-orbit,
+  .wheel-wrap:hover .wheel-face{animation-play-state:paused;}
+  .wheel-orbit{
+    position:absolute;inset:0;
+    animation:orbit-spin 26s linear infinite;
+  }
+  @keyframes orbit-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  @keyframes orbit-counter{from{transform:rotate(0deg);}to{transform:rotate(-360deg);}}
+  .wheel-center{
+    position:absolute;top:50%;left:50%;
+    width:var(--center-size);height:var(--center-size);margin:calc(var(--center-size) / -2);
+    border-radius:50%;background:linear-gradient(150deg,var(--hotpink),var(--purple));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 18px 38px rgba(139,47,240,.4), inset 0 0 0 6px rgba(255,255,255,.5);
+    z-index:3;overflow:hidden;
+  }
+  .wheel-center span{
+    font-family:'Baloo 2',sans-serif;font-weight:800;color:#fff;letter-spacing:.02em;
+    font-size:calc(var(--center-size) * 0.24);
+  }
+  /* To use a real logo instead of initials, replace the <span> above with:
+     <img src="your-logo.png" style="width:100%;height:100%;object-fit:cover;"> */
+
+  .wheel-item{position:absolute;top:50%;left:50%;width:0;height:0;}
+  .wheel-pos{
+    position:absolute;width:var(--face-size);height:var(--face-size);
+    margin-left:calc(var(--face-size) / -2);margin-top:calc(var(--face-size) / -2);
+  }
+  .wheel-face{
+    width:100%;height:100%;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:calc(var(--face-size) * 0.37);cursor:pointer;color:#fff;
+    box-shadow:0 12px 24px rgba(0,0,0,.18);
+    animation:orbit-counter 26s linear infinite;
+    transition:transform .2s ease;
+    position:relative;
+  }
+  .wheel-face:hover{transform:scale(1.15);}
+  .wheel-item:nth-child(1) .wheel-face{background:linear-gradient(150deg,var(--hotpink),#FF6FA8);}
+  .wheel-item:nth-child(2) .wheel-face{background:linear-gradient(150deg,var(--purple),#B26BFF);}
+  .wheel-item:nth-child(3) .wheel-face{background:linear-gradient(150deg,var(--teal),#3DEBD1);}
+  .wheel-item:nth-child(4) .wheel-face{background:linear-gradient(150deg,var(--orange),#FFAA6E);}
+  .wheel-item:nth-child(5) .wheel-face{background:linear-gradient(150deg,#FF3D8A,var(--purple));}
+  .wheel-item:nth-child(6) .wheel-face{background:linear-gradient(150deg,var(--ink),#5B3592);}
+
+  .wheel-tooltip{
+    position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);
+    background:var(--ink);color:#fff;font-size:12px;font-weight:800;
+    padding:7px 13px;border-radius:999px;white-space:nowrap;
+    opacity:0;pointer-events:none;transition:opacity .18s ease;
+  }
+  .wheel-face:hover .wheel-tooltip{opacity:1;}
+
+  @media(max-width:640px){
+    .wheel-wrap{
+      --wheel-radius:92px;
+      --center-size:92px;
+      --face-size:54px;
+      width:230px;height:230px;
+    }
+  }
+
+  /* ===== MENU FLIPBOOK ===== */
+  .menu-book{padding-top:40px;}
+  .menu-map-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start;
+  }
+  .flipbook-wrap{display:flex;flex-direction:column;align-items:center;}
+  .flipbook{
+    position:relative;width:min(420px,90vw);aspect-ratio:3/4;
+    perspective:2400px;
+  }
+  .flip-page{
+    position:absolute;inset:0;border-radius:18px;
+    box-shadow:0 20px 40px rgba(42,18,64,.22);
+    backface-visibility:hidden;
+    transform-origin:left center;
+    transform:rotateY(0deg);
+    transition:transform .7s cubic-bezier(.45,.05,.35,1);
+    overflow:hidden;
+  }
+  .page-content{
+    height:100%;display:flex;flex-direction:column;justify-content:center;
+    padding:36px 30px;color:var(--ink);
+  }
+  .page-content.page-cover{align-items:center;text-align:center;color:#fff;}
+  .page-cover-logo{
+    width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.22);
+    display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',sans-serif;
+    font-weight:800;font-size:24px;margin-bottom:18px;
+  }
+  .page-content.page-cover h3{font-size:28px;margin-bottom:8px;color:inherit;}
+  .page-content.page-cover p{font-size:14px;font-weight:600;opacity:.85;margin-bottom:20px;}
+  .flip-hint{font-size:12px;font-weight:700;opacity:.7;}
+  .page-content .tag{margin-bottom:18px;}
+  .menu-list{list-style:none;display:flex;flex-direction:column;gap:14px;}
+  .menu-list li{
+    display:flex;justify-content:space-between;font-size:15px;font-weight:600;
+    padding-bottom:12px;border-bottom:1px dashed rgba(42,18,64,.18);
+  }
+  .menu-list li span:last-child{font-weight:800;color:var(--hotpink);}
+
+  .flip-controls{
+    display:flex;align-items:center;gap:18px;margin-top:26px;
+  }
+  .flip-controls button{
+    width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;
+    background:linear-gradient(135deg,var(--hotpink),var(--purple));color:#fff;
+    font-size:20px;font-weight:800;box-shadow:0 8px 18px rgba(139,47,240,.3);
+    transition:transform .2s ease;
+  }
+  .flip-controls button:hover{transform:scale(1.1);}
+  .flip-controls button:disabled{opacity:.35;cursor:default;transform:none;}
+  #flipIndicator{font-weight:800;font-size:14px;color:var(--ink);}
+
+  .map-wrap{display:flex;flex-direction:column;align-items:center;}
+  .map-wrap .tag{margin-bottom:16px;}
+  .flipbook-wrap .tag{margin-bottom:16px;}
+  .map-embed{
+    width:100%;max-width:420px;aspect-ratio:3/4;border-radius:18px;overflow:hidden;
+    box-shadow:0 20px 40px rgba(42,18,64,.22);
+  }
+  .map-embed iframe{width:100%;height:100%;border:0;}
+  .map-directions{margin-top:26px;}
+  .map-view-link{
+    margin-top:10px;font-size:13px;font-weight:700;color:var(--purple);
+    text-decoration:underline;
+  }
+
+  @media(max-width:900px){
+    .menu-map-grid{grid-template-columns:1fr;gap:60px;}
+  }
+
+  @media(max-width:640px){
+    .page-content{padding:26px 22px;}
+    .page-content.page-cover h3{font-size:22px;}
+  }
+
+  section{padding:100px max(6vw, calc((100% - 1400px) / 2));position:relative;}
+  .section-head{max-width:640px;margin-bottom:50px;}
+  .section-head h2{font-size:clamp(32px,4.5vw,50px);}
+  .tag{
+    display:inline-block;font-size:13px;font-weight:800;color:var(--purple);
+    text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px;
+  }
+
+  .service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .service-card{
+    border-radius:24px;padding:34px 28px;color:#fff;
+    box-shadow:0 16px 32px rgba(0,0,0,.14);
+    transition:transform .25s ease;
+  }
+  .service-card:hover{transform:translateY(-6px);}
+  .service-card:nth-child(1){background:linear-gradient(150deg,var(--hotpink),#FF6FA8);}
+  .service-card:nth-child(2){background:linear-gradient(150deg,var(--purple),#B26BFF);}
+  .service-card:nth-child(3){background:linear-gradient(150deg,var(--teal),#3DEBD1);color:var(--ink);}
+  .service-card:nth-child(4){background:linear-gradient(150deg,var(--orange),#FFAA6E);}
+  .service-card:nth-child(5){background:linear-gradient(150deg,#FF3D8A,var(--purple));}
+  .service-card:nth-child(6){background:linear-gradient(150deg,var(--ink),#5B3592);}
+  .service-card .icon{font-size:32px;margin-bottom:14px;}
+  .service-card h3{font-size:23px;margin-bottom:8px;}
+  .service-card p{font-size:14px;font-weight:600;opacity:.92;margin-bottom:16px;}
+  .service-card .price{font-size:16px;font-weight:800;background:rgba(255,255,255,.25);display:inline-block;padding:6px 14px;border-radius:999px;}
+
+  .gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  .gallery-tile{
+    aspect-ratio:1/1.15;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;box-shadow:0 14px 30px rgba(42,18,64,.14);
+  }
+  .gallery-tile:nth-child(1){background:linear-gradient(160deg,#2A1240,#4A2065);}
+  .gallery-tile:nth-child(2){background:linear-gradient(160deg,#DCE3EA,#B8C4D0);}
+  .gallery-tile:nth-child(3){background:linear-gradient(160deg,#FFE3EE,#FFCBE0);}
+  .gallery-tile:nth-child(4){background:linear-gradient(160deg,#FFF3D6,#FFE3A8);}
+  .gallery-tile svg{width:46%;height:auto;filter:drop-shadow(0 8px 14px rgba(0,0,0,.22));}
+  .gallery-cap{
+    margin-top:14px;font-size:12.5px;font-weight:800;letter-spacing:.02em;
+    padding:5px 14px;border-radius:999px;background:rgba(255,255,255,.85);color:var(--ink);
+  }
+
+  .info{
+    background:var(--ink);color:#fff;border-radius:32px;margin:0 max(6vw, calc((100% - 1400px) / 2));width:auto;
+    display:grid;grid-template-columns:1fr 1fr;gap:60px;padding:70px max(6vw, calc((100% - 1400px) / 2));
+  }
+  .info .tag{color:var(--yellow);}
+  .info h2{color:#fff;}
+  .hours-list{list-style:none;margin-top:24px;}
+  .hours-list li{
+    display:flex;justify-content:space-between;padding:13px 0;
+    border-bottom:1px solid rgba(255,255,255,.14);font-size:16px;font-weight:600;
+  }
+  .hours-list li span:last-child{color:var(--teal);font-weight:800;}
+  .contact-block{display:flex;flex-direction:column;gap:16px;margin-top:24px;}
+  .contact-line{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:600;}
+  .contact-line .dot{width:9px;height:9px;border-radius:50%;background:var(--hotpink);flex-shrink:0;}
+
+  .final-cta{
+    text-align:center;padding:120px max(6vw, calc((100% - 1400px) / 2));
+    background:linear-gradient(135deg,var(--hotpink),var(--purple) 60%,var(--teal));
+    color:#fff;margin-top:20px;
+  }
+  .final-cta h2{color:#fff;font-size:clamp(34px,5.5vw,58px);max-width:16ch;margin:0 auto 34px;}
+  .final-cta .cta-row{justify-content:center;}
+  .final-cta .btn-secondary{background:#fff;color:var(--ink);}
+
+  footer{
+    padding:28px max(6vw, calc((100% - 1400px) / 2));text-align:center;font-size:13px;font-weight:600;
+    color:rgba(42,18,64,.55);
+    display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px;
+  }
+  footer a{color:var(--hotpink);font-weight:800;}
+  .footer-legal{width:100%;margin-top:10px;font-size:12px;}
+  .footer-legal a{color:rgba(42,18,64,.6);font-weight:700;text-decoration:underline;cursor:pointer;}
+  .footer-legal a:hover{color:var(--hotpink);}
+
+  /* ===== LANGUAGE-BLOCK CONTENT (used for long-form legal text) ===== */
+  .legal-content{display:none;}
+  body[data-lang="sk"] .legal-content.lang-sk{display:block;}
+  body[data-lang="vi"] .legal-content.lang-vi{display:block;}
+  body[data-lang="en"] .legal-content.lang-en{display:block;}
+
+  /* ===== COOKIE CONSENT BANNER ===== */
+  .cookie-banner{
+    position:fixed;left:0;right:0;bottom:0;z-index:200;
+    background:var(--ink);color:#fff;
+    padding:22px max(6vw, calc((100% - 1400px) / 2));
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;
+    box-shadow:0 -10px 30px rgba(0,0,0,.25);
+    transform:translateY(110%);transition:transform .4s ease;
+  }
+  .cookie-banner.show{transform:translateY(0);}
+  .cookie-text{flex:1 1 380px;font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.85);}
+  .cookie-text a{color:var(--teal);font-weight:700;cursor:pointer;text-decoration:underline;}
+  .cookie-actions{display:flex;gap:12px;flex-wrap:wrap;}
+  .cookie-actions button{
+    padding:12px 20px;border-radius:999px;border:none;cursor:pointer;
+    font-family:'Nunito',sans-serif;font-weight:800;font-size:13.5px;white-space:nowrap;
+    transition:transform .15s ease;
+  }
+  .cookie-actions button:hover{transform:translateY(-2px);}
+  .cookie-btn-essential{background:rgba(255,255,255,.14);color:#fff;}
+  .cookie-btn-accept{background:linear-gradient(135deg,var(--hotpink),var(--purple));color:#fff;}
+
+  /* ===== LEGAL MODAL ===== */
+  .legal-overlay{
+    position:fixed;inset:0;z-index:300;background:rgba(42,18,64,.55);
+    display:none;align-items:center;justify-content:center;padding:24px;
+    backdrop-filter:blur(4px);
+  }
+  .legal-overlay.show{display:flex;}
+  .legal-modal{
+    background:#fff;border-radius:22px;max-width:720px;width:100%;
+    max-height:82vh;overflow-y:auto;padding:44px 40px;position:relative;
+    box-shadow:0 30px 60px rgba(42,18,64,.35);
+  }
+  .legal-close{
+    position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:50%;
+    border:none;background:rgba(42,18,64,.08);color:var(--ink);font-size:16px;font-weight:800;
+    cursor:pointer;transition:background .15s ease;
+  }
+  .legal-close:hover{background:rgba(255,61,138,.15);}
+  .legal-modal h3{font-size:26px;margin-bottom:18px;}
+  .legal-modal h4{font-size:16px;margin:22px 0 8px;color:var(--purple);}
+  .legal-modal p, .legal-modal li{font-size:14.5px;line-height:1.7;color:rgba(42,18,64,.82);}
+  .legal-modal ul{margin:8px 0 8px 20px;}
+  .legal-modal .legal-updated{font-size:12.5px;color:rgba(42,18,64,.5);margin-bottom:20px;}
+
+  @media(max-width:640px){
+    .legal-modal{padding:30px 22px;}
+    .cookie-banner{padding:20px 5vw;}
+  }
+  .footer-line{display:inline-flex;align-items:center;gap:10px;white-space:nowrap;}
+  .footer-line:first-child::after{content:"·";margin-left:2px;color:rgba(42,18,64,.35);}
+  @media(max-width:480px){
+    .footer-line:first-child::after{content:none;}
+  }
+
+  @media(max-width:820px){
+    .service-grid{grid-template-columns:1fr;}
+    .gallery-grid{grid-template-columns:1fr 1fr;}
+    .info{grid-template-columns:1fr;margin:0 4vw;padding:50px max(6vw, calc((100% - 1400px) / 2));border-radius:24px;}
+    .blob1,.blob2,.blob3{display:none;}
+    .lang-toggle{padding:8px 11px;}
+  }
+</style>
+</head>
+<body data-lang="sk">
+
+<nav class="nav">
+  <div class="logo" style="display:flex;align-items:center;gap:10px;">
+    <img src="/logo.png" alt="Nails by Linh" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+    Nails by Linh<span>.</span>
+  </div>
+  <div class="nav-right">
+    <div class="lang-switch" id="langSwitch">
+      <button class="lang-toggle" id="langToggle" aria-label="Zmeniť jazyk">
+        <span class="globe">🌐</span><span id="langCurrent">SK</span>
+      </button>
+      <div class="lang-dropdown">
+        <button data-lang="sk" class="active">🇸🇰 Slovenčina</button>
+        <button data-lang="vi">🇻🇳 Tiếng Việt</button>
+        <button data-lang="en">🇬🇧 English</button>
+      </div>
+    </div>
+    <a class="nav-cta" href="#kontakt"><span data-i18n="nav_cta">Rezervovať 💅</span></a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="sparkle" style="width:8px;height:8px;top:22%;left:38%;animation-delay:.2s;"></div>
+  <div class="sparkle" style="width:5px;height:5px;top:38%;left:58%;animation-delay:1.1s;"></div>
+  <div class="sparkle" style="width:6px;height:6px;top:68%;left:44%;animation-delay:1.9s;"></div>
+  <div class="sparkle" style="width:7px;height:7px;top:15%;left:66%;animation-delay:.7s;"></div>
+  <div class="sparkle" style="width:5px;height:5px;top:80%;left:30%;animation-delay:2.5s;"></div>
+
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="eyebrow" data-i18n="eyebrow">💅 Nail salón · Bratislava</div>
+      <h1 data-i18n-html="hero_title">Nechty, čo <span class="grad">žiaria</span><br>tak ako vy.</h1>
+      <p class="lede" data-i18n="hero_lede">Farebné gél nechty, nail art a starostlivosť, po ktorej sa budete cítiť ako hviezda. Priamo v centre Bratislavy.</p>
+
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://wa.me/421900123456" target="_blank">
+          <span data-i18n="cta_whatsapp">💬 Rezervovať cez WhatsApp</span>
+        </a>
+        <a class="btn btn-secondary" href="tel:+421 900 123 456"><span data-i18n="cta_call">📞 Zavolať</span></a>
+      </div>
+
+      <div class="swatches">
+        <div class="swatch" data-i18n="swatch1">✨ Gél</div>
+        <div class="swatch" data-i18n="swatch2">💜 Akryl</div>
+        <div class="swatch" data-i18n="swatch3">🌊 Manikúra</div>
+        <div class="swatch" data-i18n="swatch4">🔥 Pedikúra</div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="wheel-wrap">
+        <div class="wheel-center">
+          <img src="/logo.png" alt="Nails by Linh" style="width:100%;height:100%;object-fit:cover;">
+        </div>
+        <div class="wheel-orbit">
+          <div class="wheel-item">
+            <div class="wheel-pos" style="transform:rotate(0deg) translate(var(--wheel-radius), 0) rotate(0deg);">
+              <a class="wheel-face" href="#service1"><span class="wheel-tooltip" data-i18n="card1_title">Gélové nechty</span>✨</a>
+            </div>
+          </div>
+          <div class="wheel-item">
+            <div class="wheel-pos" style="transform:rotate(60deg) translate(var(--wheel-radius), 0) rotate(-60deg);">
+              <a class="wheel-face" href="#service2"><span class="wheel-tooltip" data-i18n="card2_title">Akrylové nechty</span>💜</a>
+            </div>
+          </div>
+          <div class="wheel-item">
+            <div class="wheel-pos" style="transform:rotate(120deg) translate(var(--wheel-radius), 0) rotate(-120deg);">
+              <a class="wheel-face" href="#service3"><span class="wheel-tooltip" data-i18n="card3_title">Manikúra</span>🌊</a>
+            </div>
+          </div>
+          <div class="wheel-item">
+            <div class="wheel-pos" style="transform:rotate(180deg) translate(var(--wheel-radius), 0) rotate(-180deg);">
+              <a class="wheel-face" href="#service4"><span class="wheel-tooltip" data-i18n="card4_title">Pedikúra</span>🔥</a>
+            </div>
+          </div>
+          <div class="wheel-item">
+            <div class="wheel-pos" style="transform:rotate(240deg) translate(var(--wheel-radius), 0) rotate(-240deg);">
+              <a class="wheel-face" href="#service5"><span class="wheel-tooltip" data-i18n="card5_title">Nail art</span>🎨</a>
+            </div>
+          </div>
+          <div class="wheel-item">
+            <div class="wheel-pos" style="transform:rotate(300deg) translate(var(--wheel-radius), 0) rotate(-300deg);">
+              <a class="wheel-face" href="#service6"><span class="wheel-tooltip" data-i18n="card6_title">Odstránenie</span>🧼</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRICE MENU FLIPBOOK + MAP ===== -->
+<section class="menu-book">
+  <div class="section-head">
+    <div class="tag" data-i18n="menu_tag">Kompletný cenník</div>
+    <h2 data-i18n="menu_title">Prelistujte si menu 📖</h2>
+  </div>
+
+  <div class="menu-map-grid">
+
+    <div class="flipbook-wrap">
+      <div class="tag" data-i18n="menu_col_tag">Náš cenník</div>
+      <div class="flipbook" id="flipbook">
+        <!-- Each .flip-page below is a DEMO page. To use real photographed menu pages,
+             replace the inner content of each .flip-page with:
+             <img src="menu-page-1.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">
+             Add more <div class="flip-page">...</div> blocks for more pages — the script
+             auto-detects how many pages exist. -->
+        <div class="flip-page" style="z-index:4;background:linear-gradient(160deg,var(--hotpink),var(--purple));">
+          <div class="page-content page-cover">
+            <div class="page-cover-logo"><img src="/logo.png" alt="Nails by Linh" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></div>
+            <h3 data-i18n="menu_cover_title">Nails by Linh</h3>
+            <p data-i18n="menu_cover_sub">Kompletný cenník služieb</p>
+            <span class="flip-hint" data-i18n="menu_flip_hint">👉 Kliknite alebo použite šípky</span>
+          </div>
+        </div>
+        <div class="flip-page" style="z-index:3;background:#fff;">
+          <div class="page-content">
+            <div class="tag" data-i18n="menu_page1_tag">Ruky</div>
+            <ul class="menu-list">
+              <li><span data-i18n="card1_title">Gélové nechty</span><span>25 €</span></li>
+              <li><span data-i18n="card2_title">Akrylové nechty</span><span>30 €</span></li>
+              <li><span data-i18n="card3_title">Manikúra</span><span>15 €</span></li>
+              <li><span data-i18n="menu_extra1">Francúzska manikúra</span><span>+3 €</span></li>
+              <li><span data-i18n="menu_extra2">Odstránenie</span><span>10 €</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="flip-page" style="z-index:2;background:#fff;">
+          <div class="page-content">
+            <div class="tag" data-i18n="menu_page2_tag">Nohy &amp; Nail Art</div>
+            <ul class="menu-list">
+              <li><span data-i18n="card4_title">Pedikúra</span><span>20 €</span></li>
+              <li><span data-i18n="menu_extra3">Parafínový zábal</span><span>10 €</span></li>
+              <li><span data-i18n="card5_title">Nail art</span><span>+5 €</span></li>
+              <li><span data-i18n="menu_extra4">3D dekorácie</span><span>+8 €</span></li>
+              <li><span data-i18n="menu_extra5">Detská manikúra</span><span>12 €</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="flip-page" style="z-index:1;background:linear-gradient(160deg,var(--ink),#4A2065);">
+          <div class="page-content page-cover">
+            <h3 data-i18n="menu_back_title">Tešíme sa na vás! 💅</h3>
+            <a class="btn btn-primary" href="https://wa.me/421900123456" target="_blank" style="margin-top:20px;">
+              <span data-i18n="cta_whatsapp">💬 Rezervovať cez WhatsApp</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-controls">
+        <button id="flipPrev" aria-label="Previous page">‹</button>
+        <span id="flipIndicator">1 / 4</span>
+        <button id="flipNext" aria-label="Next page">›</button>
+      </div>
+    </div>
+
+    <div class="map-wrap">
+      <div class="tag" data-i18n="map_tag">Kde nás nájdete</div>
+      <div class="map-embed">
+        <iframe
+          src="https://maps.google.com/maps?q=Obchodn%C3%A1%2012%2C%20811%2006%20Bratislava&t=&z=15&ie=UTF8&iwloc=&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+      <a class="btn btn-secondary map-directions" href="https://www.google.com/maps/dir/?api=1&destination=Obchodn%C3%A1+12%2C+811+06+Bratislava" target="_blank">
+        <span data-i18n="map_directions">📍 Naplánovať trasu</span>
+      </a>
+      <a class="map-view-link" href="https://www.google.com/maps/search/?api=1&query=Obchodn%C3%A1+12%2C+811+06+Bratislava" target="_blank">
+        <span data-i18n="map_view">🗺️ Otvoriť v Google Maps</span>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <div class="section-head">
+    <div class="tag" data-i18n="services_tag">Čo ponúkame</div>
+    <h2 data-i18n="services_title">Naše služby 💅</h2>
+  </div>
+  <div class="service-grid">
+    <div class="service-card" id="service1">
+      <div class="icon">✨</div>
+      <h3 data-i18n="card1_title">Gélové nechty</h3>
+      <p data-i18n="card1_desc">Trvácne a lesklé, vydržia až 4 týždne bez odlupovania.</p>
+      <div class="price"><span data-i18n="price_prefix">od</span> 25 €</div>
+    </div>
+    <div class="service-card" id="service2">
+      <div class="icon">💜</div>
+      <h3 data-i18n="card2_title">Akrylové nechty</h3>
+      <p data-i18n="card2_desc">Pevná štruktúra, ideálna na predĺženie a tvarovanie nechtov.</p>
+      <div class="price"><span data-i18n="price_prefix">od</span> 30 €</div>
+    </div>
+    <div class="service-card" id="service3">
+      <div class="icon">🌊</div>
+      <h3 data-i18n="card3_title">Manikúra</h3>
+      <p data-i18n="card3_desc">Klasická starostlivosť o nechty a pokožku rúk.</p>
+      <div class="price"><span data-i18n="price_prefix">od</span> 15 €</div>
+    </div>
+    <div class="service-card" id="service4">
+      <div class="icon">🔥</div>
+      <h3 data-i18n="card4_title">Pedikúra</h3>
+      <p data-i18n="card4_desc">Relaxačná starostlivosť o chodidlá s peelingom a masážou.</p>
+      <div class="price"><span data-i18n="price_prefix">od</span> 20 €</div>
+    </div>
+    <div class="service-card" id="service5">
+      <div class="icon">🎨</div>
+      <h3 data-i18n="card5_title">Nail art</h3>
+      <p data-i18n="card5_desc">Ručne maľované vzory, kamienky alebo 3D dekorácie podľa vášho štýlu.</p>
+      <div class="price"><span data-i18n="price_prefix">od</span> 5 €</div>
+    </div>
+    <div class="service-card" id="service6">
+      <div class="icon">🧼</div>
+      <h3 data-i18n="card6_title">Odstránenie</h3>
+      <p data-i18n="card6_desc">Šetrné odstránenie gélu alebo akrylu bez poškodenia nechtov.</p>
+      <div class="price"><span data-i18n="price_prefix">od</span> 10 €</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-head">
+    <div class="tag" data-i18n="gallery_tag">Naša práca</div>
+    <h2 data-i18n="gallery_title">Galéria 🌈</h2>
+  </div>
+  <div class="gallery-grid">
+
+    <!-- Cat-eye / mačacie oko -->
+    <div class="gallery-tile">
+      <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="catEyeBase" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#3B1F5C"/>
+            <stop offset="55%" stop-color="#7C3AAD"/>
+            <stop offset="100%" stop-color="#1F1035"/>
+          </linearGradient>
+          <linearGradient id="catEyeStreak" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+            <stop offset="45%" stop-color="#E9D8FF" stop-opacity=".95"/>
+            <stop offset="60%" stop-color="#ffffff" stop-opacity="1"/>
+            <stop offset="75%" stop-color="#E9D8FF" stop-opacity=".9"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="M50,8 C22,8 8,58 8,112 C8,172 26,192 50,192 C74,192 92,172 92,112 C92,58 78,8 50,8 Z" fill="url(#catEyeBase)" stroke="#1A0E2E" stroke-width="2"/>
+        <ellipse cx="46" cy="95" rx="10" ry="70" fill="url(#catEyeStreak)" transform="rotate(-18 46 95)"/>
+      </svg>
+      <div class="gallery-cap" data-i18n="gal_cap1">Mačacie oko</div>
+    </div>
+
+    <!-- Chrome / mirror -->
+    <div class="gallery-tile">
+      <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="chromeBase" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#C9D6E3"/>
+            <stop offset="30%" stop-color="#8FA3C9"/>
+            <stop offset="55%" stop-color="#E8EEF5"/>
+            <stop offset="80%" stop-color="#7B8FB8"/>
+            <stop offset="100%" stop-color="#C9D6E3"/>
+          </linearGradient>
+        </defs>
+        <path d="M50,8 C22,8 8,58 8,112 C8,172 26,192 50,192 C74,192 92,172 92,112 C92,58 78,8 50,8 Z" fill="url(#chromeBase)" stroke="#5C6E92" stroke-width="2"/>
+        <ellipse cx="38" cy="70" rx="7" ry="46" fill="#ffffff" opacity=".55" transform="rotate(-14 38 70)"/>
+      </svg>
+      <div class="gallery-cap" data-i18n="gal_cap2">Chrome</div>
+    </div>
+
+    <!-- Ombré -->
+    <div class="gallery-tile">
+      <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ombreBase" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FFD7E9" stop-opacity="0"/>
+            <stop offset="45%" stop-color="#FF9FC7"/>
+            <stop offset="100%" stop-color="#FF3D8A"/>
+          </linearGradient>
+        </defs>
+        <path d="M50,8 C22,8 8,58 8,112 C8,172 26,192 50,192 C74,192 92,172 92,112 C92,58 78,8 50,8 Z" fill="url(#ombreBase)" stroke="#D63E7A" stroke-width="2"/>
+      </svg>
+      <div class="gallery-cap" data-i18n="gal_cap3">Ombré</div>
+    </div>
+
+    <!-- Glitter tip -->
+    <div class="gallery-tile">
+      <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="glitterBase" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FFD400"/>
+            <stop offset="38%" stop-color="#FFE7A0"/>
+            <stop offset="40%" stop-color="#FBEAD3"/>
+            <stop offset="100%" stop-color="#F6D9BE"/>
+          </linearGradient>
+        </defs>
+        <path d="M50,8 C22,8 8,58 8,112 C8,172 26,192 50,192 C74,192 92,172 92,112 C92,58 78,8 50,8 Z" fill="url(#glitterBase)" stroke="#D9A94A" stroke-width="2"/>
+        <g fill="#ffffff" opacity=".95">
+          <circle cx="30" cy="24" r="2.4"/><circle cx="42" cy="16" r="1.8"/><circle cx="55" cy="22" r="2.2"/>
+          <circle cx="66" cy="30" r="1.6"/><circle cx="38" cy="34" r="1.4"/><circle cx="60" cy="14" r="1.4"/>
+          <circle cx="48" cy="10" r="1.6"/><circle cx="24" cy="14" r="1.4"/>
+        </g>
+      </svg>
+      <div class="gallery-cap" data-i18n="gal_cap4">Trblietavá špička</div>
+    </div>
+
+  </div>
+</section>
+
+<section id="kontakt">
+  <div class="info">
+    <div>
+      <div class="tag" data-i18n="hours_tag">Otváracie hodiny</div>
+      <h2 data-i18n="hours_title">Kedy nás nájdete</h2>
+      <ul class="hours-list">
+        <li><span data-i18n="day_mon_fri">Pondelok – Piatok</span><span>9:00 – 19:00</span></li>
+        <li><span data-i18n="day_sat">Sobota</span><span>9:00 – 15:00</span></li>
+        <li><span data-i18n="day_sun">Nedeľa</span><span data-i18n="closed">Zatvorené</span></li>
+      </ul>
+    </div>
+    <div>
+      <div class="tag" data-i18n="contact_tag">Kontakt</div>
+      <h2 data-i18n="contact_title">Rezervujte si termín</h2>
+      <div class="contact-block">
+        <div class="contact-line"><span class="dot"></span> Obchodná 12, 811 06 Bratislava</div>
+        <div class="contact-line"><span class="dot"></span> +421 900 123 456</div>
+        <div class="contact-line"><span class="dot"></span> info@nailsbylinh.sk</div>
+        <div class="contact-line"><span class="dot"></span> Facebook: https://facebook.com/nailsbylinh</div>
+      </div>
+      <div class="cta-row" style="margin-top:28px;">
+        <a class="btn btn-primary" href="https://wa.me/421900123456" target="_blank">💬 WhatsApp</a>
+        <a class="btn btn-secondary" href="mailto:info@nailsbylinh.sk"><span data-i18n="email_btn">✉ Email</span></a>
+        <a class="btn btn-calendar" href="https://calendly.com/dravesk/30mins" target="_blank"
+           onclick="if(typeof Calendly !== 'undefined'){Calendly.initPopupWidget({url: 'https://calendly.com/dravesk/30mins'}); return false;}">
+          <span data-i18n="cta_calendar">📅 Rezervovať online</span>
+        </a>
+      </div>
+      <p class="calendar-hint" data-i18n="calendar_hint">Zvoľte si voľný termín priamo v kalendári — automaticky sa zapíše majiteľke.</p>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <h2 data-i18n="final_title">Váš nový obľúbený nail salón čaká! 💅✨</h2>
+  <div class="cta-row">
+    <a class="btn btn-primary" href="https://wa.me/421900123456" target="_blank">
+      <span data-i18n="final_whatsapp">💬 Rezervovať termín</span>
+    </a>
+    <a class="btn btn-secondary" href="https://facebook.com/nailsbylinh" target="_blank">
+      <span data-i18n="final_follow">📘 Sledovať na Facebooku</span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-line">© 2026 Nails by Linh</span>
+  <span class="footer-line"><span data-i18n="footer_text">Powered by</span> <a href="https://drave.sk/thiet-ke-website-dat-lich-nail/" target="_blank">Drave Tech Solutions s.r.o.</a></span>
+  <div class="footer-legal">
+    <a onclick="openLegalModal('terms')" data-i18n="footer_terms">Obchodné podmienky</a> ·
+    <a onclick="openLegalModal('privacy')" data-i18n="footer_privacy">Ochrana súkromia</a> ·
+    <a onclick="openLegalModal('cookies')" data-i18n="footer_cookies">Cookies</a>
+  </div>
+</footer>
+
+<!-- ===== COOKIE CONSENT BANNER (GDPR) ===== -->
+<div class="cookie-banner" id="cookieBanner">
+  <div class="cookie-text">
+    <div class="legal-content lang-sk">🍪 Táto stránka používa cookies nevyhnutné pre chod webu (napr. rezervačný systém) a so súhlasom aj na analytiku. Viac v <a onclick="openLegalModal('cookies')">Zásadách cookies</a>.</div>
+    <div class="legal-content lang-vi">🍪 Trang web này sử dụng cookie cần thiết để hoạt động (VD hệ thống đặt lịch) và cookie phân tích nếu bạn đồng ý. Xem thêm tại <a onclick="openLegalModal('cookies')">Chính sách Cookie</a>.</div>
+    <div class="legal-content lang-en">🍪 This site uses cookies required for it to function (e.g. the booking system) and, with your consent, analytics cookies. See our <a onclick="openLegalModal('cookies')">Cookie Policy</a> for details.</div>
+  </div>
+  <div class="cookie-actions">
+    <button class="cookie-btn-essential" onclick="setCookieConsent('essential')">
+      <span class="legal-content lang-sk">Iba nevyhnutné</span>
+      <span class="legal-content lang-vi">Chỉ cần thiết</span>
+      <span class="legal-content lang-en">Essential only</span>
+    </button>
+    <button class="cookie-btn-accept" onclick="setCookieConsent('all')">
+      <span class="legal-content lang-sk">Prijať všetko</span>
+      <span class="legal-content lang-vi">Chấp nhận tất cả</span>
+      <span class="legal-content lang-en">Accept all</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== LEGAL MODAL: TERMS / PRIVACY / COOKIES ===== -->
+<div class="legal-overlay" id="legalOverlay" onclick="if(event.target===this) closeLegalModal()">
+  <div class="legal-modal">
+    <button class="legal-close" onclick="closeLegalModal()">✕</button>
+
+    <!-- TERMS -->
+    <div id="legalPanel-terms" class="legal-panel">
+      <div class="legal-content lang-sk">
+        <h3>Obchodné podmienky</h3>
+        <p class="legal-updated">Posledná aktualizácia: 1. január 2026</p>
+        <p>Tieto obchodné podmienky upravujú používanie webovej stránky <strong>Nails by Linh</strong> (ďalej len „webová stránka"), ktorej prevádzkovateľom je <strong>Nails by Linh, Obchodná 12, 811 06 Bratislava</strong> (ďalej len „prevádzkovateľ").</p>
+        <h4>1. Predmet webovej stránky</h4>
+        <p>Webová stránka slúži na prezentáciu služieb nail salónu a umožňuje návštevníkom kontaktovať prevádzkovateľa a rezervovať si termín prostredníctvom tretích strán (WhatsApp, Facebook, e-mail, telefón alebo online rezervačný systém Calendly).</p>
+        <h4>2. Rezervácie</h4>
+        <p>Rezervácia termínu je záväzná objednávka služby. Prevádzkovateľ si vyhradzuje právo termín zrušiť alebo presunúť z prevádzkových dôvodov, o čom bude zákazníka informovať čo najskôr.</p>
+        <h4>3. Služby tretích strán</h4>
+        <p>Webová stránka využíva služby tretích strán (Google Maps, Calendly, WhatsApp, Facebook). Ich používanie sa riadi vlastnými podmienkami týchto poskytovateľov, za ktoré prevádzkovateľ nezodpovedá.</p>
+        <h4>4. Duševné vlastníctvo</h4>
+        <p>Obsah webovej stránky (texty, grafika, dizajn) je chránený autorským právom. Jeho kopírovanie alebo šírenie bez súhlasu prevádzkovateľa nie je povolené.</p>
+        <h4>5. Obmedzenie zodpovednosti</h4>
+        <p>Prevádzkovateľ nezodpovedá za škody vzniknuté v dôsledku výpadku webovej stránky, tretích strán alebo nesprávne uvedených údajov zo strany používateľa.</p>
+        <h4>6. Zmeny podmienok</h4>
+        <p>Prevádzkovateľ si vyhradzuje právo tieto podmienky kedykoľvek upraviť. Aktuálne znenie je vždy dostupné na tejto stránke.</p>
+        <h4>7. Kontakt</h4>
+        <p>V prípade otázok nás kontaktujte na info@nailsbylinh.sk.</p>
+      </div>
+      <div class="legal-content lang-vi">
+        <h3>Điều khoản dịch vụ</h3>
+        <p class="legal-updated">Cập nhật lần cuối: 1 tháng 1 năm 2026</p>
+        <p>Các điều khoản này áp dụng cho việc sử dụng trang web <strong>Nails by Linh</strong> ("trang web"), do <strong>Nails by Linh, Obchodná 12, 811 06 Bratislava</strong> ("chúng tôi") vận hành.</p>
+        <h4>1. Mục đích của trang web</h4>
+        <p>Trang web dùng để giới thiệu dịch vụ của tiệm nail và cho phép khách liên hệ, đặt lịch hẹn thông qua các bên thứ ba (WhatsApp, Facebook, email, điện thoại hoặc hệ thống đặt lịch Calendly).</p>
+        <h4>2. Đặt lịch hẹn</h4>
+        <p>Đặt lịch hẹn là một đơn đặt dịch vụ có tính ràng buộc. Chúng tôi có quyền hủy hoặc dời lịch hẹn vì lý do vận hành và sẽ thông báo cho khách sớm nhất có thể.</p>
+        <h4>3. Dịch vụ của bên thứ ba</h4>
+        <p>Trang web sử dụng dịch vụ của bên thứ ba (Google Maps, Calendly, WhatsApp, Facebook). Việc sử dụng các dịch vụ này tuân theo điều khoản riêng của từng nhà cung cấp, chúng tôi không chịu trách nhiệm về các dịch vụ đó.</p>
+        <h4>4. Sở hữu trí tuệ</h4>
+        <p>Nội dung trang web (văn bản, hình ảnh, thiết kế) được bảo vệ bởi luật bản quyền. Không được sao chép hoặc phát tán khi chưa có sự đồng ý của chúng tôi.</p>
+        <h4>5. Giới hạn trách nhiệm</h4>
+        <p>Chúng tôi không chịu trách nhiệm cho các thiệt hại phát sinh do lỗi kỹ thuật của trang web, bên thứ ba, hoặc do thông tin sai lệch từ phía người dùng.</p>
+        <h4>6. Thay đổi điều khoản</h4>
+        <p>Chúng tôi có quyền cập nhật điều khoản này bất cứ lúc nào. Phiên bản mới nhất luôn được đăng tại trang này.</p>
+        <h4>7. Liên hệ</h4>
+        <p>Mọi thắc mắc xin liên hệ info@nailsbylinh.sk.</p>
+      </div>
+      <div class="legal-content lang-en">
+        <h3>Terms of Service</h3>
+        <p class="legal-updated">Last updated: January 1, 2026</p>
+        <p>These Terms govern the use of the <strong>Nails by Linh</strong> website (the "Website"), operated by <strong>Nails by Linh, Obchodná 12, 811 06 Bratislava</strong> ("we", "us").</p>
+        <h4>1. Purpose of the Website</h4>
+        <p>The Website presents the salon's services and lets visitors contact us and book appointments through third-party channels (WhatsApp, Facebook, email, phone, or the Calendly booking system).</p>
+        <h4>2. Bookings</h4>
+        <p>A booking is a binding service order. We reserve the right to cancel or reschedule an appointment for operational reasons and will inform the customer as soon as possible.</p>
+        <h4>3. Third-party services</h4>
+        <p>The Website uses third-party services (Google Maps, Calendly, WhatsApp, Facebook). Use of these services is governed by each provider's own terms, for which we are not responsible.</p>
+        <h4>4. Intellectual property</h4>
+        <p>The Website's content (text, graphics, design) is protected by copyright. Copying or distributing it without our consent is not permitted.</p>
+        <h4>5. Limitation of liability</h4>
+        <p>We are not liable for damages resulting from Website downtime, third-party services, or incorrect information provided by users.</p>
+        <h4>6. Changes to these terms</h4>
+        <p>We may update these Terms at any time. The current version is always available on this page.</p>
+        <h4>7. Contact</h4>
+        <p>For questions, contact us at info@nailsbylinh.sk.</p>
+      </div>
+    </div>
+
+    <!-- PRIVACY -->
+    <div id="legalPanel-privacy" class="legal-panel" style="display:none;">
+      <div class="legal-content lang-sk">
+        <h3>Ochrana osobných údajov</h3>
+        <p class="legal-updated">Posledná aktualizácia: 1. január 2026</p>
+        <p>Prevádzkovateľom osobných údajov je <strong>Nails by Linh, Obchodná 12, 811 06 Bratislava, IČO: [DOPLNIŤ IČO]</strong>, kontakt: info@nailsbylinh.sk. Táto stránka spracúva osobné údaje v súlade s Nariadením (EÚ) 2016/679 (GDPR) a zákonom č. 18/2018 Z. z. o ochrane osobných údajov.</p>
+        <h4>1. Aké údaje spracúvame</h4>
+        <ul>
+          <li>Kontaktné údaje, ktoré nám poskytnete pri rezervácii (meno, telefón, e-mail, požadovaná služba a termín).</li>
+          <li>Komunikácia cez WhatsApp, Facebook Messenger alebo e-mail.</li>
+          <li>Údaje spracúvané online rezervačným systémom Calendly (viď jeho vlastné zásady ochrany súkromia).</li>
+        </ul>
+        <h4>2. Účel a právny základ spracúvania</h4>
+        <p>Údaje spracúvame za účelom vybavenia vašej rezervácie a komunikácie s vami (plnenie zmluvy, čl. 6 ods. 1 písm. b) GDPR), prípadne na základe oprávneného záujmu (vybavovanie dopytov).</p>
+        <h4>3. Príjemcovia údajov</h4>
+        <p>Údaje môžu byť spracúvané poskytovateľmi tretích strán: Calendly (plánovanie termínov), Meta/WhatsApp (komunikácia), Google (mapy). Títo poskytovatelia môžu údaje spracúvať aj mimo EÚ na základe vlastných záruk ochrany údajov.</p>
+        <h4>4. Doba uchovávania</h4>
+        <p>Údaje uchovávame len po dobu nevyhnutnú na vybavenie rezervácie a plnenie zákonných povinností, najviac však 24 mesiacov od poslednej návštevy, pokiaľ zákon neustanovuje inak.</p>
+        <h4>5. Vaše práva</h4>
+        <p>Máte právo na prístup k údajom, ich opravu, vymazanie, obmedzenie spracúvania, prenosnosť a právo namietať proti spracúvaniu. Máte tiež právo podať sťažnosť na Úrad na ochranu osobných údajov SR.</p>
+        <h4>6. Kontakt</h4>
+        <p>V otázkach ochrany osobných údajov nás kontaktujte na info@nailsbylinh.sk.</p>
+      </div>
+      <div class="legal-content lang-vi">
+        <h3>Chính sách quyền riêng tư</h3>
+        <p class="legal-updated">Cập nhật lần cuối: 1 tháng 1 năm 2026</p>
+        <p>Bên kiểm soát dữ liệu là <strong>Nails by Linh, Obchodná 12, 811 06 Bratislava, MST: [ĐIỀN MST]</strong>, liên hệ: info@nailsbylinh.sk. Trang web xử lý dữ liệu cá nhân theo Quy định (EU) 2016/679 (GDPR).</p>
+        <h4>1. Dữ liệu chúng tôi thu thập</h4>
+        <ul>
+          <li>Thông tin liên hệ bạn cung cấp khi đặt lịch (tên, số điện thoại, email, dịch vụ và thời gian mong muốn).</li>
+          <li>Nội dung trao đổi qua WhatsApp, Facebook Messenger hoặc email.</li>
+          <li>Dữ liệu do hệ thống đặt lịch Calendly xử lý (xem chính sách riêng của Calendly).</li>
+        </ul>
+        <h4>2. Mục đích và cơ sở pháp lý</h4>
+        <p>Chúng tôi xử lý dữ liệu để thực hiện việc đặt lịch và liên lạc với bạn (thực hiện hợp đồng, Điều 6(1)(b) GDPR), hoặc dựa trên lợi ích hợp pháp (xử lý yêu cầu của bạn).</p>
+        <h4>3. Bên nhận dữ liệu</h4>
+        <p>Dữ liệu có thể được xử lý bởi bên thứ ba: Calendly (đặt lịch), Meta/WhatsApp (liên lạc), Google (bản đồ). Các bên này có thể xử lý dữ liệu ngoài EU theo các biện pháp bảo vệ riêng của họ.</p>
+        <h4>4. Thời gian lưu trữ</h4>
+        <p>Chúng tôi chỉ lưu dữ liệu trong thời gian cần thiết để xử lý lịch hẹn và tuân thủ nghĩa vụ pháp lý, tối đa 24 tháng kể từ lần liên hệ cuối, trừ khi luật yêu cầu khác.</p>
+        <h4>5. Quyền của bạn</h4>
+        <p>Bạn có quyền truy cập, chỉnh sửa, xóa, hạn chế xử lý, yêu cầu chuyển dữ liệu và phản đối việc xử lý. Bạn cũng có quyền khiếu nại tới cơ quan giám sát bảo vệ dữ liệu tại Slovakia.</p>
+        <h4>6. Liên hệ</h4>
+        <p>Về các vấn đề quyền riêng tư, vui lòng liên hệ info@nailsbylinh.sk.</p>
+      </div>
+      <div class="legal-content lang-en">
+        <h3>Privacy Policy</h3>
+        <p class="legal-updated">Last updated: January 1, 2026</p>
+        <p>The data controller is <strong>Nails by Linh, Obchodná 12, 811 06 Bratislava, Company ID: [ADD COMPANY ID]</strong>, contact: info@nailsbylinh.sk. This Website processes personal data in accordance with Regulation (EU) 2016/679 (GDPR).</p>
+        <h4>1. Data we collect</h4>
+        <ul>
+          <li>Contact details you provide when booking (name, phone, email, requested service and time).</li>
+          <li>Communication via WhatsApp, Facebook Messenger, or email.</li>
+          <li>Data processed by the Calendly booking system (see Calendly's own privacy policy).</li>
+        </ul>
+        <h4>2. Purpose and legal basis</h4>
+        <p>We process data to handle your booking and communicate with you (performance of a contract, Art. 6(1)(b) GDPR), or based on legitimate interest (handling inquiries).</p>
+        <h4>3. Data recipients</h4>
+        <p>Data may be processed by third-party providers: Calendly (scheduling), Meta/WhatsApp (communication), Google (maps). These providers may process data outside the EU under their own data-protection safeguards.</p>
+        <h4>4. Retention period</h4>
+        <p>We retain data only for as long as necessary to handle your booking and comply with legal obligations, for a maximum of 24 months from your last contact, unless the law requires otherwise.</p>
+        <h4>5. Your rights</h4>
+        <p>You have the right to access, correct, delete, and restrict processing of your data, the right to data portability, and the right to object to processing. You also have the right to lodge a complaint with the Slovak Data Protection Authority.</p>
+        <h4>6. Contact</h4>
+        <p>For privacy questions, contact us at info@nailsbylinh.sk.</p>
+      </div>
+    </div>
+
+    <!-- COOKIES -->
+    <div id="legalPanel-cookies" class="legal-panel" style="display:none;">
+      <div class="legal-content lang-sk">
+        <h3>Zásady používania cookies</h3>
+        <p class="legal-updated">Posledná aktualizácia: 1. január 2026</p>
+        <p>Cookies sú malé textové súbory, ktoré si webová stránka ukladá vo vašom prehliadači. Používame ich v týchto kategóriách:</p>
+        <h4>Nevyhnutné cookies</h4>
+        <p>Zabezpečujú základnú funkčnosť stránky (napr. zapamätanie si zvoleného jazyka, fungovanie rezervačného systému Calendly). Bez nich stránka nemôže fungovať správne — nie je možné ich vypnúť.</p>
+        <h4>Funkčné / cookies tretích strán</h4>
+        <p>Rezervačný systém Calendly a mapa Google Maps môžu pri použití nastaviť vlastné cookies potrebné na svoju funkčnosť.</p>
+        <h4>Analytické cookies (iba so súhlasom)</h4>
+        <p>Ak k tomu dáte súhlas, môžeme použiť analytické nástroje na meranie návštevnosti a zlepšovanie stránky. Bez vášho súhlasu tieto cookies nepoužívame.</p>
+        <h4>Ako spravovať cookies</h4>
+        <p>Svoj súhlas môžete kedykoľvek zmeniť vymazaním cookies vo svojom prehliadači a opätovným načítaním stránky, čím sa banner zobrazí znova. Cookies môžete tiež spravovať priamo v nastaveniach vášho prehliadača.</p>
+      </div>
+      <div class="legal-content lang-vi">
+        <h3>Chính sách Cookie</h3>
+        <p class="legal-updated">Cập nhật lần cuối: 1 tháng 1 năm 2026</p>
+        <p>Cookie là các tệp văn bản nhỏ được trang web lưu trên trình duyệt của bạn. Chúng tôi sử dụng các loại cookie sau:</p>
+        <h4>Cookie cần thiết</h4>
+        <p>Đảm bảo chức năng cơ bản của trang (VD ghi nhớ ngôn ngữ đã chọn, vận hành hệ thống đặt lịch Calendly). Không có các cookie này, trang không thể hoạt động đúng — không thể tắt loại này.</p>
+        <h4>Cookie chức năng / bên thứ ba</h4>
+        <p>Hệ thống đặt lịch Calendly và bản đồ Google Maps có thể tự đặt cookie riêng cần thiết cho chức năng của chúng khi được sử dụng.</p>
+        <h4>Cookie phân tích (chỉ khi bạn đồng ý)</h4>
+        <p>Nếu bạn đồng ý, chúng tôi có thể dùng công cụ phân tích để đo lượng truy cập và cải thiện trang web. Chúng tôi không dùng loại cookie này nếu không có sự đồng ý của bạn.</p>
+        <h4>Cách quản lý cookie</h4>
+        <p>Bạn có thể thay đổi lựa chọn bất cứ lúc nào bằng cách xóa cookie trong trình duyệt và tải lại trang, banner sẽ hiện lại. Bạn cũng có thể quản lý cookie trực tiếp trong cài đặt trình duyệt của mình.</p>
+      </div>
+      <div class="legal-content lang-en">
+        <h3>Cookie Policy</h3>
+        <p class="legal-updated">Last updated: January 1, 2026</p>
+        <p>Cookies are small text files that a website stores in your browser. We use the following categories:</p>
+        <h4>Necessary cookies</h4>
+        <p>These ensure the site's basic functionality (e.g. remembering your chosen language, the Calendly booking system working correctly). The site cannot function properly without them — they cannot be turned off.</p>
+        <h4>Functional / third-party cookies</h4>
+        <p>The Calendly booking system and the Google Maps embed may set their own cookies needed for their functionality when used.</p>
+        <h4>Analytics cookies (consent-based only)</h4>
+        <p>If you consent, we may use analytics tools to measure traffic and improve the site. We do not use these cookies without your consent.</p>
+        <h4>Managing cookies</h4>
+        <p>You can change your choice at any time by clearing cookies in your browser and reloading the page, which will show the banner again. You can also manage cookies directly in your browser settings.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const translations = {
+  sk: {
+    nav_cta: "Rezervovať 💅",
+    eyebrow: "💅 Nail salón · Bratislava",
+    hero_title: 'Nechty, čo <span class="grad">žiaria</span><br>tak ako vy.',
+    hero_lede: 'Farebné gél nechty, nail art a starostlivosť, po ktorej sa budete cítiť ako hviezda. Priamo v centre Bratislavy.',
+    cta_whatsapp: "💬 Rezervovať cez WhatsApp",
+    cta_call: "📞 Zavolať",
+    swatch1: "✨ Gél", swatch2: "💜 Akryl", swatch3: "🌊 Manikúra", swatch4: "🔥 Pedikúra",
+    services_tag: "Čo ponúkame", services_title: "Naše služby 💅",
+    card1_title: "Gélové nechty", card1_desc: "Trvácne a lesklé, vydržia až 4 týždne bez odlupovania.",
+    card2_title: "Akrylové nechty", card2_desc: "Pevná štruktúra, ideálna na predĺženie a tvarovanie nechtov.",
+    card3_title: "Manikúra", card3_desc: "Klasická starostlivosť o nechty a pokožku rúk.",
+    card4_title: "Pedikúra", card4_desc: "Relaxačná starostlivosť o chodidlá s peelingom a masážou.",
+    card5_title: "Nail art", card5_desc: "Ručne maľované vzory, kamienky alebo 3D dekorácie podľa vášho štýlu.",
+    card6_title: "Odstránenie", card6_desc: "Šetrné odstránenie gélu alebo akrylu bez poškodenia nechtov.",
+    price_prefix: "od",
+    gallery_tag: "Naša práca", gallery_title: "Galéria 🌈",
+    gal_cap1: "Mačacie oko", gal_cap2: "Chrome", gal_cap3: "Ombré", gal_cap4: "Trblietavá špička",
+    hours_tag: "Otváracie hodiny", hours_title: "Kedy nás nájdete",
+    day_mon_fri: "Pondelok – Piatok", day_sat: "Sobota", day_sun: "Nedeľa", closed: "Zatvorené",
+    contact_tag: "Kontakt", contact_title: "Rezervujte si termín",
+    email_btn: "✉ Email",
+    final_title: "Váš nový obľúbený nail salón čaká! 💅✨",
+    final_whatsapp: "💬 Rezervovať termín", final_follow: "📘 Sledovať na Facebooku",
+    footer_text: "Powered by",
+    menu_tag: "Kompletný cenník", menu_title: "Prelistujte si menu 📖",
+    menu_cover_title: "Nails by Linh", menu_cover_sub: "Kompletný cenník služieb",
+    menu_flip_hint: "👉 Kliknite alebo použite šípky",
+    menu_page1_tag: "Ruky", menu_page2_tag: "Nohy & Nail Art",
+    menu_extra1: "Francúzska manikúra", menu_extra2: "Odstránenie",
+    menu_extra3: "Parafínový zábal", menu_extra4: "3D dekorácie", menu_extra5: "Detská manikúra",
+    menu_back_title: "Tešíme sa na vás! 💅",
+    map_tag: "Kde nás nájdete", map_directions: "📍 Naplánovať trasu",
+    menu_col_tag: "Náš cenník",
+    footer_terms: "Obchodné podmienky", footer_privacy: "Ochrana súkromia", footer_cookies: "Cookies",
+    cta_calendar: "📅 Rezervovať online", calendar_hint: "Zvoľte si voľný termín priamo v kalendári — automaticky sa zapíše majiteľke.",
+    map_view: "🗺️ Otvoriť v Google Maps"
+  },
+  vi: {
+    nav_cta: "Đặt lịch 💅",
+    eyebrow: "💅 Tiệm Nail · Bratislava",
+    hero_title: 'Móng tay <span class="grad">tỏa sáng</span><br>như chính bạn.',
+    hero_lede: 'Nail gel nhiều màu, vẽ nail art và chăm sóc móng khiến bạn cảm thấy như một ngôi sao. Ngay tại trung tâm Bratislava.',
+    cta_whatsapp: "💬 Đặt lịch qua WhatsApp",
+    cta_call: "📞 Gọi điện",
+    swatch1: "✨ Gel", swatch2: "💜 Bột", swatch3: "🌊 Chăm sóc tay", swatch4: "🔥 Chăm sóc chân",
+    services_tag: "Dịch vụ của chúng tôi", services_title: "Dịch vụ 💅",
+    card1_title: "Nail Gel", card1_desc: "Bền đẹp và bóng, giữ được đến 4 tuần không bong tróc.",
+    card2_title: "Nail Bột (Acrylic)", card2_desc: "Kết cấu chắc chắn, lý tưởng để nối dài và tạo dáng móng.",
+    card3_title: "Chăm sóc tay (Manicure)", card3_desc: "Chăm sóc cơ bản cho móng và da tay.",
+    card4_title: "Chăm sóc chân (Pedicure)", card4_desc: "Chăm sóc thư giãn cho bàn chân kèm tẩy da chết và massage.",
+    card5_title: "Vẽ nail art", card5_desc: "Vẽ họa tiết thủ công, đính đá hoặc trang trí 3D theo phong cách của bạn.",
+    card6_title: "Tháo nail", card6_desc: "Tháo gel hoặc bột nhẹ nhàng, không làm hại móng thật.",
+    price_prefix: "chỉ từ",
+    gallery_tag: "Tác phẩm của chúng tôi", gallery_title: "Thư viện ảnh 🌈",
+    gal_cap1: "Mắt mèo", gal_cap2: "Chrome", gal_cap3: "Ombré", gal_cap4: "Đầu nhũ",
+    hours_tag: "Giờ mở cửa", hours_title: "Khi nào chúng tôi mở cửa",
+    day_mon_fri: "Thứ 2 – Thứ 6", day_sat: "Thứ 7", day_sun: "Chủ nhật", closed: "Đóng cửa",
+    contact_tag: "Liên hệ", contact_title: "Đặt lịch hẹn ngay",
+    email_btn: "✉ Email",
+    final_title: "Tiệm nail yêu thích mới của bạn đang chờ! 💅✨",
+    final_whatsapp: "💬 Đặt lịch ngay", final_follow: "📘 Theo dõi Facebook",
+    footer_text: "Powered by",
+    menu_tag: "Bảng giá đầy đủ", menu_title: "Xem menu dịch vụ 📖",
+    menu_cover_title: "Nails by Linh", menu_cover_sub: "Bảng giá dịch vụ đầy đủ",
+    menu_flip_hint: "👉 Nhấn hoặc dùng nút mũi tên",
+    menu_page1_tag: "Tay", menu_page2_tag: "Chân & Nail Art",
+    menu_extra1: "Nail Pháp (French)", menu_extra2: "Tháo nail",
+    menu_extra3: "Đắp Paraffin", menu_extra4: "Trang trí 3D", menu_extra5: "Nail cho trẻ em",
+    menu_back_title: "Hẹn gặp bạn tại tiệm! 💅",
+    map_tag: "Vị trí của chúng tôi", map_directions: "📍 Chỉ đường",
+    menu_col_tag: "Bảng giá của chúng tôi",
+    footer_terms: "Điều khoản dịch vụ", footer_privacy: "Chính sách quyền riêng tư", footer_cookies: "Cookie",
+    cta_calendar: "📅 Đặt lịch trực tuyến", calendar_hint: "Chọn giờ trống ngay trên lịch — hệ thống tự động ghi vào lịch của chủ tiệm.",
+    map_view: "🗺️ Mở trong Google Maps"
+  },
+  en: {
+    nav_cta: "Book now 💅",
+    eyebrow: "💅 Nail Salon · Bratislava",
+    hero_title: 'Nails that <span class="grad">shine</span><br>just like you.',
+    hero_lede: 'Colorful gel nails, nail art and care that make you feel like a star. Right in the heart of Bratislava.',
+    cta_whatsapp: "💬 Book via WhatsApp",
+    cta_call: "📞 Call us",
+    swatch1: "✨ Gel", swatch2: "💜 Acrylic", swatch3: "🌊 Manicure", swatch4: "🔥 Pedicure",
+    services_tag: "What we offer", services_title: "Our services 💅",
+    card1_title: "Gel nails", card1_desc: "Long-lasting and glossy, holds up to 4 weeks without chipping.",
+    card2_title: "Acrylic nails", card2_desc: "Sturdy structure, ideal for extending and shaping your nails.",
+    card3_title: "Manicure", card3_desc: "Classic care for your nails and hand skin.",
+    card4_title: "Pedicure", card4_desc: "Relaxing foot care with exfoliation and massage.",
+    card5_title: "Nail art", card5_desc: "Hand-painted designs, rhinestones or 3D decorations in your style.",
+    card6_title: "Removal", card6_desc: "Gentle removal of gel or acrylic without damaging your natural nails.",
+    price_prefix: "from",
+    gallery_tag: "Our work", gallery_title: "Gallery 🌈",
+    gal_cap1: "Cat-eye", gal_cap2: "Chrome", gal_cap3: "Ombré", gal_cap4: "Glitter tip",
+    hours_tag: "Opening hours", hours_title: "When to find us",
+    day_mon_fri: "Monday – Friday", day_sat: "Saturday", day_sun: "Sunday", closed: "Closed",
+    contact_tag: "Contact", contact_title: "Book your appointment",
+    email_btn: "✉ Email",
+    final_title: "Your new favorite nail salon awaits! 💅✨",
+    final_whatsapp: "💬 Book an appointment", final_follow: "📘 Follow on Facebook",
+    footer_text: "Powered by",
+    menu_tag: "Full price list", menu_title: "Flip through the menu 📖",
+    menu_cover_title: "Nails by Linh", menu_cover_sub: "Complete service price list",
+    menu_flip_hint: "👉 Click or use the arrows",
+    menu_page1_tag: "Hands", menu_page2_tag: "Feet & Nail Art",
+    menu_extra1: "French manicure", menu_extra2: "Removal",
+    menu_extra3: "Paraffin wrap", menu_extra4: "3D decorations", menu_extra5: "Kids manicure",
+    menu_back_title: "We look forward to seeing you! 💅",
+    map_tag: "Find us here", map_directions: "📍 Get directions",
+    menu_col_tag: "Our price list",
+    footer_terms: "Terms of Service", footer_privacy: "Privacy Policy", footer_cookies: "Cookies",
+    cta_calendar: "📅 Book online", calendar_hint: "Pick an open slot right on the calendar — it's added automatically for the owner.",
+    map_view: "🗺️ Open in Google Maps"
+  }
+};
+
+function setLanguage(lang){
+  document.body.setAttribute('data-lang', lang);
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(translations[lang][key] !== undefined){ el.textContent = translations[lang][key]; }
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-html');
+    if(translations[lang][key] !== undefined){ el.innerHTML = translations[lang][key]; }
+  });
+  document.querySelectorAll('.lang-dropdown button').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  document.getElementById('langCurrent').textContent = lang.toUpperCase();
+  document.documentElement.lang = lang;
+}
+
+document.querySelectorAll('.lang-dropdown button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    setLanguage(btn.dataset.lang);
+    document.getElementById('langSwitch').classList.remove('open');
+  });
+});
+
+const langSwitchEl = document.getElementById('langSwitch');
+const langToggleBtn = document.getElementById('langToggle');
+langToggleBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  langSwitchEl.classList.toggle('open');
+});
+document.addEventListener('click', (e)=>{
+  if(!langSwitchEl.contains(e.target)){ langSwitchEl.classList.remove('open'); }
+});
+
+/* ===== LEGAL MODAL ===== */
+function openLegalModal(which){
+  document.querySelectorAll('.legal-panel').forEach(p=> p.style.display = 'none');
+  const panel = document.getElementById('legalPanel-' + which);
+  if(panel) panel.style.display = 'block';
+  document.getElementById('legalOverlay').classList.add('show');
+}
+function closeLegalModal(){
+  document.getElementById('legalOverlay').classList.remove('show');
+}
+
+/* ===== COOKIE CONSENT (GDPR) ===== */
+function setCookieConsent(level){
+  try{ localStorage.setItem('cookieConsent', level); }catch(e){}
+  document.getElementById('cookieBanner').classList.remove('show');
+}
+(function initCookieBanner(){
+  let saved = null;
+  try{ saved = localStorage.getItem('cookieConsent'); }catch(e){}
+  if(!saved){
+    setTimeout(()=> document.getElementById('cookieBanner').classList.add('show'), 600);
+  }
+})();
+
+/* ===== FLIPBOOK LOGIC ===== */
+const flipPages = document.querySelectorAll('#flipbook .flip-page');
+const flipTotal = flipPages.length;
+let flipCurrent = 0; // number of pages currently flipped (0 = showing page 1)
+const flipPrevBtn = document.getElementById('flipPrev');
+const flipNextBtn = document.getElementById('flipNext');
+const flipIndicator = document.getElementById('flipIndicator');
+
+function updateFlipUI(){
+  flipIndicator.textContent = (flipCurrent + 1) + ' / ' + flipTotal;
+  flipPrevBtn.disabled = flipCurrent === 0;
+  flipNextBtn.disabled = flipCurrent === flipTotal - 1;
+}
+function flipNext(){
+  if(flipCurrent < flipTotal - 1){
+    flipPages[flipCurrent].style.transform = 'rotateY(-180deg)';
+    flipCurrent++;
+    updateFlipUI();
+  }
+}
+function flipPrev(){
+  if(flipCurrent > 0){
+    flipCurrent--;
+    flipPages[flipCurrent].style.transform = 'rotateY(0deg)';
+    updateFlipUI();
+  }
+}
+flipNextBtn.addEventListener('click', flipNext);
+flipPrevBtn.addEventListener('click', flipPrev);
+document.querySelectorAll('#flipbook .flip-page').forEach((page, idx)=>{
+  page.addEventListener('click', ()=>{
+    if(idx === flipCurrent) flipNext();
+    else if(idx === flipCurrent - 1) flipPrev();
+  });
+});
+updateFlipUI();
+</script>
+
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3d66472bef26495',t:'MTc4OTc5Nzg2MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
