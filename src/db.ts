@@ -82,6 +82,45 @@ export async function deleteService(env: Env, tenantId: string, serviceId: strin
   await env.DB.prepare('DELETE FROM services WHERE id = ? AND tenant_id = ?').bind(serviceId, tenantId).run();
 }
 
+export interface GalleryImage {
+  id: string;
+  tenant_id: string;
+  r2_key: string;
+  caption: string;
+  sort_order: number;
+}
+
+export async function listGalleryImages(env: Env, tenantId: string): Promise<GalleryImage[]> {
+  const { results } = await env.DB.prepare('SELECT * FROM gallery_images WHERE tenant_id = ? ORDER BY sort_order ASC, created_at ASC').bind(tenantId).all<GalleryImage>();
+  return results;
+}
+
+// A generous but firm cap — this is a photo album for a small salon, not
+// unlimited cloud storage; keeps R2 usage/cost predictable per tenant.
+export const MAX_GALLERY_IMAGES_PER_TENANT = 40;
+
+export async function countGalleryImages(env: Env, tenantId: string): Promise<number> {
+  const row = await env.DB.prepare('SELECT COUNT(*) AS n FROM gallery_images WHERE tenant_id = ?').bind(tenantId).first<{ n: number }>();
+  return row?.n ?? 0;
+}
+
+export async function addGalleryImage(env: Env, tenantId: string, r2Key: string, caption: string): Promise<GalleryImage> {
+  const id = crypto.randomUUID();
+  const { results } = await env.DB.prepare('SELECT COALESCE(MAX(sort_order), -1) + 1 AS n FROM gallery_images WHERE tenant_id = ?').bind(tenantId).all<{ n: number }>();
+  const sortOrder = results[0]?.n ?? 0;
+  await env.DB.prepare('INSERT INTO gallery_images (id, tenant_id, r2_key, caption, sort_order) VALUES (?, ?, ?, ?, ?)')
+    .bind(id, tenantId, r2Key, caption, sortOrder).run();
+  return { id, tenant_id: tenantId, r2_key: r2Key, caption, sort_order: sortOrder };
+}
+
+export async function getGalleryImage(env: Env, tenantId: string, imageId: string): Promise<GalleryImage | null> {
+  return env.DB.prepare('SELECT * FROM gallery_images WHERE id = ? AND tenant_id = ?').bind(imageId, tenantId).first<GalleryImage>();
+}
+
+export async function deleteGalleryImage(env: Env, tenantId: string, imageId: string): Promise<void> {
+  await env.DB.prepare('DELETE FROM gallery_images WHERE id = ? AND tenant_id = ?').bind(imageId, tenantId).run();
+}
+
 export async function updateTenantFields(env: Env, id: string, fields: Record<string, any>): Promise<void> {
   const keys = Object.keys(fields).filter(k => (TENANT_EDITABLE_FIELDS as readonly string[]).includes(k));
   if (keys.length === 0) return;
@@ -117,4 +156,8 @@ export async function createTenant(env: Env, opts: { slug: string; brand_name: s
 export async function getSuperAdminPasswordHash(env: Env): Promise<string | null> {
   const row = await env.DB.prepare('SELECT password_hash FROM super_admin WHERE id = 1').first<{ password_hash: string }>();
   return row?.password_hash ?? null;
+}
+
+export async function updateSuperAdminPasswordHash(env: Env, hash: string): Promise<void> {
+  await env.DB.prepare('UPDATE super_admin SET password_hash = ? WHERE id = 1').bind(hash).run();
 }

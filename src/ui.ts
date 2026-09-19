@@ -95,6 +95,13 @@ export function tenantAdminPage(): string {
     </div>
 
     <div class="card">
+      <h2>Album fotiek (interiér, práce)</h2>
+      <p style="font-size:.85rem;color:#666;margin-bottom:10px;">Fotky sa na stránke zobrazujú ako knižka, ktorú návštevník listuje. Nahrané fotky sa automaticky zmenšia.</p>
+      <input id="gallery_file" type="file" accept="image/*" multiple>
+      <div id="gallery_grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-top:14px;"></div>
+    </div>
+
+    <div class="card">
       <h2>Cenník služieb</h2>
       <table id="svc_table"><thead><tr><th>Ikona</th><th>Názov</th><th>Cena</th><th></th></tr></thead><tbody></tbody></table>
       <div class="row" style="margin-top:14px;">
@@ -172,28 +179,120 @@ export function tenantAdminPage(): string {
       if (data.success) { services = services.filter(s => s.id !== id); renderServices(); }
     }
 
+    // ── Gallery ────────────────────────────────────────────────────────────
+    let gallery = [];
+
+    async function loadGallery() {
+      const res = await fetch('/admin/api/gallery', { headers: authHeaders() });
+      const data = await res.json();
+      gallery = data.images || [];
+      renderGallery();
+    }
+
+    function renderGallery() {
+      const grid = document.getElementById('gallery_grid');
+      grid.innerHTML = gallery.map(g => \`
+        <div style="position:relative;">
+          <img src="/img/\${g.r2_key}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;">
+          <button class="danger" onclick="deleteImage('\${g.id}')" style="position:absolute;top:4px;right:4px;padding:2px 8px;">×</button>
+        </div>\`).join('');
+    }
+
+    // Resize/compress client-side before upload — keeps R2 storage and
+    // upload time reasonable regardless of the original photo's size
+    // (phone camera photos are often 4000px+/several MB).
+    function compressImage(file) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = () => { img.onload = () => {
+          const maxDim = 1600;
+          let { width, height } = img;
+          if (width > maxDim || height > maxDim) {
+            const scale = maxDim / Math.max(width, height);
+            width = Math.round(width * scale); height = Math.round(height * scale);
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.8));
+        }; img.onerror = reject; img.src = reader.result; };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.getElementById('gallery_file').addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      for (const file of files) {
+        try {
+          const dataUrl = await compressImage(file);
+          const res = await fetch('/admin/api/gallery', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ data: dataUrl }) });
+          const data = await res.json();
+          if (data.success) { gallery.push(data.image); renderGallery(); }
+          else showMsg(data.message || 'Chyba pri nahrávaní', false);
+        } catch (err) { showMsg('Chyba pri spracovaní obrázka', false); }
+      }
+      e.target.value = '';
+    });
+
+    async function deleteImage(id) {
+      const res = await fetch('/admin/api/gallery/' + id, { method: 'DELETE', headers: authHeaders() });
+      const data = await res.json();
+      if (data.success) { gallery = gallery.filter(g => g.id !== id); renderGallery(); }
+    }
+
     load();
+    loadGallery();
+  </script></body></html>`;
+}
+
+export function superAdminLoginPage(): string {
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Admin</title><style>${SHARED_STYLE}</style></head><body>
+  <div class="login-box card">
+    <h2>Super Admin</h2>
+    <div id="msg"></div>
+    <label>Mật khẩu</label>
+    <input type="password" id="pw" placeholder="Mật khẩu">
+    <button class="primary" onclick="login()" style="width:100%">Đăng nhập</button>
+  </div>
+  <script>
+    if (localStorage.getItem('super_token')) location.href = '/super-admin/app';
+    async function login() {
+      const res = await fetch('/super-admin/api/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ password: document.getElementById('pw').value }) });
+      const data = await res.json();
+      if (data.success) { localStorage.setItem('super_token', data.token); location.href = '/super-admin/app'; }
+      else document.getElementById('msg').innerHTML = '<div class="msg err">' + (data.message || 'Sai mật khẩu') + '</div>';
+    }
+    document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
   </script></body></html>`;
 }
 
 export function superAdminPage(): string {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Super Admin</title><style>${SHARED_STYLE}</style></head><body>
-  <div class="bar"><b>Super Admin — správa agentúr</b><button onclick="logout()">Odhlásiť</button></div>
+  <div class="bar"><b>Super Admin — Quản lý đại lý</b><button onclick="logout()">Đăng xuất</button></div>
   <div class="wrap">
     <div id="msg"></div>
     <div class="card">
-      <h2>Nová agentúra</h2>
+      <h2>Tạo đại lý mới</h2>
       <div class="row">
-        <div><label>Slug (subdoména, napr. "linh")</label><input id="new_slug" placeholder="linh"></div>
-        <div><label>Názov salónu</label><input id="new_brand"></div>
+        <div><label>Slug (subdomain, vd: "linh")</label><input id="new_slug" placeholder="linh"></div>
+        <div><label>Tên salon</label><input id="new_brand"></div>
       </div>
-      <label>Heslo pre ich /admin</label><input id="new_password" type="text">
-      <button class="primary" onclick="createTenant()">Vytvoriť (nasadiť okamžite)</button>
+      <label>Mật khẩu cho /admin của họ</label><input id="new_password" type="text">
+      <button class="primary" onclick="createTenant()">Tạo (chạy ngay lập tức)</button>
     </div>
     <div class="card">
-      <h2>Agentúry</h2>
-      <table id="tenants_table"><thead><tr><th>Slug</th><th>Názov</th><th>Aktívna</th><th></th></tr></thead><tbody></tbody></table>
+      <h2>Danh sách đại lý</h2>
+      <table id="tenants_table"><thead><tr><th>Slug</th><th>Tên</th><th>Trạng thái</th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="card">
+      <h2>Đổi mật khẩu Super Admin</h2>
+      <label>Mật khẩu hiện tại</label><input id="cur_pw" type="password">
+      <label>Mật khẩu mới</label><input id="new_pw" type="password">
+      <button class="primary" onclick="changePassword()">Đổi mật khẩu</button>
     </div>
   </div>
   <script>
@@ -210,8 +309,8 @@ export function superAdminPage(): string {
       const tbody = document.querySelector('#tenants_table tbody');
       tbody.innerHTML = data.tenants.map(t => \`<tr>
         <td>\${t.slug}.nails.drave.sk</td><td>\${t.brand_name}</td>
-        <td>\${t.active ? '✅' : '⏸️'}</td>
-        <td><button class="secondary" onclick="toggleActive('\${t.id}', \${t.active ? 0 : 1})">\${t.active ? 'Pozastaviť' : 'Aktivovať'}</button></td>
+        <td>\${t.active ? '✅ Hoạt động' : '⏸️ Tạm dừng'}</td>
+        <td><button class="secondary" onclick="toggleActive('\${t.id}', \${t.active ? 0 : 1})">\${t.active ? 'Tạm dừng' : 'Kích hoạt'}</button></td>
       </tr>\`).join('');
     }
 
@@ -219,11 +318,22 @@ export function superAdminPage(): string {
       const slug = document.getElementById('new_slug').value.trim().toLowerCase();
       const brand_name = document.getElementById('new_brand').value.trim();
       const password = document.getElementById('new_password').value;
-      if (!slug || !brand_name || !password) { showMsg('Vyplňte všetky polia', false); return; }
+      if (!slug || !brand_name || !password) { showMsg('Vui lòng điền đầy đủ thông tin', false); return; }
       const res = await fetch('/super-admin/api/tenants', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ slug, brand_name, password }) });
       const data = await res.json();
-      if (data.success) { showMsg('Vytvorené — beží na ' + slug + '.nails.drave.sk ✅', true); load(); }
-      else showMsg(data.message || 'Chyba', false);
+      if (data.success) { showMsg('Đã tạo — chạy tại ' + slug + '.nails.drave.sk ✅', true); load(); }
+      else showMsg(data.message || 'Có lỗi xảy ra', false);
+    }
+
+    async function changePassword() {
+      const currentPassword = document.getElementById('cur_pw').value;
+      const newPassword = document.getElementById('new_pw').value;
+      if (!currentPassword || !newPassword) { showMsg('Vui lòng điền đầy đủ mật khẩu', false); return; }
+      if (newPassword.length < 6) { showMsg('Mật khẩu mới phải có ít nhất 6 ký tự', false); return; }
+      const res = await fetch('/super-admin/api/change-password', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ currentPassword, newPassword }) });
+      const data = await res.json();
+      if (data.success) { showMsg('Đổi mật khẩu thành công ✅', true); document.getElementById('cur_pw').value = ''; document.getElementById('new_pw').value = ''; }
+      else showMsg(data.message || 'Có lỗi xảy ra', false);
     }
 
     async function toggleActive(id, active) {

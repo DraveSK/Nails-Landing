@@ -29,3 +29,11 @@ directory = "./public"
 binding = "DB"
 database_name = "nails-landing-db"
 database_id = "5b1f0f8b-78c7-4ea2-8087-c1018bac2446"
+
+# Gallery photos (shop + service photos each agency uploads themselves).
+# R2 instead of base64-in-D1 (unlike the logo) because photos are much
+# larger and there can be many per tenant — D1 row/page size limits and
+# read costs make that a bad fit for a photo album.
+[[r2_buckets]]
+binding = "GALLERY"
+bucket_name = "nails-landing-gallery"

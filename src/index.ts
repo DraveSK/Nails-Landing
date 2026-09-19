@@ -9,10 +9,12 @@ import { signToken, verifyToken, hashPassword, verifyPassword, getBearerToken } 
 import {
   getTenantBySlug, getTenantByCustomDomain, getTenantById, listTenants, listServices,
   updateTenantFields, updateTenantAdminFields, createTenant, createService, deleteService,
-  getSuperAdminPasswordHash,
+  getSuperAdminPasswordHash, updateSuperAdminPasswordHash,
+  listGalleryImages, addGalleryImage, getGalleryImage, deleteGalleryImage,
+  countGalleryImages, MAX_GALLERY_IMAGES_PER_TENANT,
 } from './db';
-import { renderTenantSite, renderNotFound } from './site';
-import { loginPage, tenantAdminPage, superAdminPage } from './ui';
+import { renderTenantSite, renderNotFound, renderPrivacyPage } from './site';
+import { loginPage, tenantAdminPage, superAdminPage, superAdminLoginPage } from './ui';
 
 const ROOT_DOMAIN = 'nails.drave.sk';
 
@@ -51,9 +53,22 @@ export default {
     const host = req.headers.get('Host') || url.host;
     const path = url.pathname;
 
+    // ── Gallery photo bytes (public, any host — served straight from R2) ───
+    const imgMatch = path.match(/^\/img\/([a-f0-9-]+\/[a-zA-Z0-9_.-]+)$/);
+    if (imgMatch && req.method === 'GET') {
+      const obj = await env.GALLERY.get(imgMatch[1]);
+      if (!obj) return new Response('Not found', { status: 404 });
+      return new Response(obj.body, {
+        headers: {
+          'Content-Type': obj.httpMetadata?.contentType || 'image/jpeg',
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+      });
+    }
+
     // ── Super-admin (operator only, lives on the bare domain) ──────────────
     if (path === '/super-admin' || path === '/super-admin/') {
-      return html(loginPage('Super Admin', '/super-admin/api/login', 'super_token', '/super-admin/app'));
+      return html(superAdminLoginPage());
     }
     if (path === '/super-admin/app') {
       return html(superAdminPage());
@@ -83,6 +98,18 @@ export default {
       const admin_password_hash = await hashPassword(body.password);
       const tenant = await createTenant(env, { slug, brand_name: body.brand_name, admin_password_hash });
       return json({ success: true, tenant });
+    }
+    if (path === '/super-admin/api/change-password' && req.method === 'POST') {
+      if (!(await requireSuperAuth(req, env))) return json({ success: false, message: 'Unauthorized' }, 401);
+      const body = await req.json<{ currentPassword: string; newPassword: string }>().catch(() => null);
+      if (!body?.currentPassword || !body?.newPassword) return json({ success: false, message: 'Thiếu thông tin' }, 400);
+      if (body.newPassword.length < 6) return json({ success: false, message: 'Mật khẩu mới quá ngắn' }, 400);
+      const hash = await getSuperAdminPasswordHash(env);
+      if (!hash || !(await verifyPassword(body.currentPassword, hash))) {
+        return json({ success: false, message: 'Mật khẩu hiện tại không đúng' }, 401);
+      }
+      await updateSuperAdminPasswordHash(env, await hashPassword(body.newPassword));
+      return json({ success: true });
     }
     const superTenantMatch = path.match(/^\/super-admin\/api\/tenants\/([^/]+)$/);
     if (superTenantMatch && req.method === 'PUT') {
@@ -135,12 +162,53 @@ export default {
       await deleteService(env, tenant.id, svcMatch[1]);
       return json({ success: true });
     }
+    if (tenant && path === '/admin/api/gallery' && req.method === 'GET') {
+      if (!(await requireTenantAuth(req, env, tenant.id))) return json({ success: false, message: 'Unauthorized' }, 401);
+      const images = await listGalleryImages(env, tenant.id);
+      return json({ success: true, images });
+    }
+    if (tenant && path === '/admin/api/gallery' && req.method === 'POST') {
+      if (!(await requireTenantAuth(req, env, tenant.id))) return json({ success: false, message: 'Unauthorized' }, 401);
+      const count = await countGalleryImages(env, tenant.id);
+      if (count >= MAX_GALLERY_IMAGES_PER_TENANT) {
+        return json({ success: false, message: `Max ${MAX_GALLERY_IMAGES_PER_TENANT} fotiek dosiahnutých` }, 400);
+      }
+      const body = await req.json<{ data: string; caption?: string }>().catch(() => null);
+      const match = body?.data?.match(/^data:(image\/(?:jpeg|png|webp));base64,(.+)$/);
+      if (!match) return json({ success: false, message: 'Neplatný obrázok (len JPEG/PNG/WebP)' }, 400);
+      const [, mime, b64] = match;
+      const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+      // Client already compresses before upload; this is a hard server-side
+      // backstop so a modified client (or bug) can't fill up R2/D1 anyway.
+      if (bytes.byteLength > 4 * 1024 * 1024) {
+        return json({ success: false, message: 'Obrázok je príliš veľký (max 4MB)' }, 400);
+      }
+      const ext = mime === 'image/png' ? 'png' : mime === 'image/webp' ? 'webp' : 'jpg';
+      const r2Key = `${tenant.id}/${crypto.randomUUID()}.${ext}`;
+      await env.GALLERY.put(r2Key, bytes, { httpMetadata: { contentType: mime } });
+      const image = await addGalleryImage(env, tenant.id, r2Key, body?.caption?.slice(0, 200) || '');
+      return json({ success: true, image });
+    }
+    const galMatch = path.match(/^\/admin\/api\/gallery\/([^/]+)$/);
+    if (tenant && galMatch && req.method === 'DELETE') {
+      if (!(await requireTenantAuth(req, env, tenant.id))) return json({ success: false, message: 'Unauthorized' }, 401);
+      const image = await getGalleryImage(env, tenant.id, galMatch[1]);
+      if (image) {
+        await env.GALLERY.delete(image.r2_key);
+        await deleteGalleryImage(env, tenant.id, image.id);
+      }
+      return json({ success: true });
+    }
 
     // ── Public site ──────────────────────────────────────────────────────
+    if (tenant && path === '/privacy') {
+      return html(renderPrivacyPage(tenant));
+    }
     if (tenant) {
       if (!tenant.active) return html(renderNotFound(), 404);
       const services = await listServices(env, tenant.id);
-      return html(renderTenantSite(tenant, services));
+      const gallery = await listGalleryImages(env, tenant.id);
+      return html(renderTenantSite(tenant, services, gallery));
     }
 
     // A path meant for a tenant (/admin/*, /admin/api/*) that didn't match
