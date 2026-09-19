@@ -32,6 +32,7 @@ const SHARED_STYLE = `
   .card h2 { margin-top: 0; font-size: 1.15rem; }
   label { display: block; font-size: .85rem; color: #555; margin: 12px 0 4px; }
   input, textarea { width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: .95rem; }
+  input[type="color"] { width: 100%; height: 44px; padding: 4px; cursor: pointer; }
   textarea { min-height: 60px; }
   button.primary { background: #FF3D8A; color: #fff; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 14px; }
   button.secondary { background: #eee; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; margin-left: 8px; }
