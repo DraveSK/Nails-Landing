@@ -51,3 +51,5 @@ This has NOT been deployed from here yet — the live `nails.drave.sk` is
 still served by the original standalone Worker script. Redeploying from
 this project will overwrite that script with the (currently identical)
 mirrored version.
+
+<!-- trigger first git-integration build -->
