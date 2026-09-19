@@ -8,12 +8,12 @@ import type { Env } from './env';
 import { signToken, verifyToken, hashPassword, verifyPassword, getBearerToken } from './auth';
 import {
   getTenantBySlug, getTenantByCustomDomain, getTenantById, listTenants, listServices,
-  updateTenantFields, updateTenantAdminFields, createTenant, createService, deleteService,
+  updateTenantFields, updateTenantAdminFields, createTenant, createService, updateService, deleteService,
   getSuperAdminPasswordHash, updateSuperAdminPasswordHash,
   listGalleryImages, addGalleryImage, getGalleryImage, deleteGalleryImage,
   countGalleryImages, MAX_GALLERY_IMAGES_PER_TENANT,
 } from './db';
-import { renderTenantSite, renderNotFound, renderPrivacyPage } from './site';
+import { renderTenantSite, renderNotFound } from './site';
 import { renderManifest, renderServiceWorker } from './pwa';
 import { loginPage, tenantAdminPage, superAdminPage, superAdminLoginPage } from './ui';
 
@@ -152,15 +152,21 @@ export default {
     }
     if (tenant && path === '/admin/api/services' && req.method === 'POST') {
       if (!(await requireTenantAuth(req, env, tenant.id))) return json({ success: false, message: 'Unauthorized' }, 401);
-      const body = await req.json<{ name: string; price: string; icon: string }>().catch(() => null);
+      const body = await req.json<{ name: string; price: string; icon: string; description?: string }>().catch(() => null);
       if (!body?.name || !body?.price) return json({ success: false, message: 'Thiếu thông tin' }, 400);
-      const service = await createService(env, tenant.id, { name: body.name, price: body.price, icon: body.icon || '💅' });
+      const service = await createService(env, tenant.id, { name: body.name, price: body.price, icon: body.icon || '💅', description: body.description });
       return json({ success: true, service });
     }
     const svcMatch = path.match(/^\/admin\/api\/services\/([^/]+)$/);
     if (tenant && svcMatch && req.method === 'DELETE') {
       if (!(await requireTenantAuth(req, env, tenant.id))) return json({ success: false, message: 'Unauthorized' }, 401);
       await deleteService(env, tenant.id, svcMatch[1]);
+      return json({ success: true });
+    }
+    if (tenant && svcMatch && req.method === 'PUT') {
+      if (!(await requireTenantAuth(req, env, tenant.id))) return json({ success: false, message: 'Unauthorized' }, 401);
+      const fields = await req.json<Record<string, any>>().catch(() => ({}));
+      await updateService(env, tenant.id, svcMatch[1], fields);
       return json({ success: true });
     }
     if (tenant && path === '/admin/api/gallery' && req.method === 'GET') {
@@ -202,9 +208,6 @@ export default {
     }
 
     // ── Public site ──────────────────────────────────────────────────────
-    if (tenant && path === '/privacy') {
-      return html(renderPrivacyPage(tenant));
-    }
     if (tenant && path === '/manifest.json') {
       return new Response(renderManifest(tenant), { headers: { 'Content-Type': 'application/manifest+json' } });
     }

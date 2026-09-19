@@ -109,6 +109,7 @@ export function tenantAdminPage(): string {
         <div><label>Tên dịch vụ</label><input id="new_name"></div>
       </div>
       <label>Giá</label><input id="new_price" placeholder="vd: từ 25€">
+      <label>Mô tả ngắn (hiện dưới tên dịch vụ)</label><input id="new_desc" placeholder="vd: Bền đẹp, giữ được 4 tuần">
       <button class="primary" onclick="addService()">Thêm dịch vụ</button>
     </div>
   </div>
@@ -137,7 +138,7 @@ export function tenantAdminPage(): string {
     function renderServices() {
       const tbody = document.querySelector('#svc_table tbody');
       tbody.innerHTML = services.map(s => \`<tr>
-        <td>\${s.icon}</td><td>\${s.name}</td><td>\${s.price}</td>
+        <td>\${s.icon}</td><td>\${s.name}<br><span style="color:#888;font-size:.8rem;">\${s.description || ''}</span></td><td>\${s.price}</td>
         <td><button class="danger" onclick="deleteService('\${s.id}')">Xóa</button></td>
       </tr>\`).join('');
     }
@@ -167,10 +168,11 @@ export function tenantAdminPage(): string {
       const name = document.getElementById('new_name').value.trim();
       const price = document.getElementById('new_price').value.trim();
       const icon = document.getElementById('new_icon').value.trim() || '💅';
+      const description = document.getElementById('new_desc').value.trim();
       if (!name || !price) { showMsg('Vui lòng điền tên và giá', false); return; }
-      const res = await fetch('/admin/api/services', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ name, price, icon }) });
+      const res = await fetch('/admin/api/services', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ name, price, icon, description }) });
       const data = await res.json();
-      if (data.success) { services.push(data.service); renderServices(); document.getElementById('new_name').value = ''; document.getElementById('new_price').value = ''; }
+      if (data.success) { services.push(data.service); renderServices(); document.getElementById('new_name').value = ''; document.getElementById('new_price').value = ''; document.getElementById('new_desc').value = ''; }
     }
 
     async function deleteService(id) {
@@ -196,6 +198,28 @@ export function tenantAdminPage(): string {
           <img src="/img/\${g.r2_key}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;">
           <button class="danger" onclick="deleteImage('\${g.id}')" style="position:absolute;top:4px;right:4px;padding:2px 8px;">×</button>
         </div>\`).join('');
+    }
+
+    // iPhones save photos as HEIC/HEIF by default, which most browsers
+    // (everything except Safari) can't decode into a <canvas> at all — so
+    // without this, uploads from an iPhone would silently fail. Converted
+    // to JPEG client-side via heic2any (loaded on demand, only when a HEIC
+    // file actually shows up) before the normal resize/compress step.
+    let heic2anyLoaded = null;
+    function loadHeic2any() {
+      if (heic2anyLoaded) return heic2anyLoaded;
+      heic2anyLoaded = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+        script.onload = () => resolve(window.heic2any);
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+      return heic2anyLoaded;
+    }
+    function isHeic(file) {
+      const name = (file.name || '').toLowerCase();
+      return /image\/heic|image\/heif/.test(file.type) || name.endsWith('.heic') || name.endsWith('.heif');
     }
 
     // Resize/compress client-side before upload — keeps R2 storage and
@@ -226,12 +250,18 @@ export function tenantAdminPage(): string {
       const files = Array.from(e.target.files);
       for (const file of files) {
         try {
-          const dataUrl = await compressImage(file);
+          let sourceFile = file;
+          if (isHeic(file)) {
+            showMsg('Đang chuyển đổi ảnh HEIC…', true);
+            const heic2any = await loadHeic2any();
+            sourceFile = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 });
+          }
+          const dataUrl = await compressImage(sourceFile);
           const res = await fetch('/admin/api/gallery', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ data: dataUrl }) });
           const data = await res.json();
           if (data.success) { gallery.push(data.image); renderGallery(); }
           else showMsg(data.message || 'Lỗi khi tải ảnh lên', false);
-        } catch (err) { showMsg('Lỗi khi xử lý ảnh', false); }
+        } catch (err) { showMsg('Lỗi khi xử lý ảnh (định dạng không hỗ trợ?)', false); }
       }
       e.target.value = '';
     });

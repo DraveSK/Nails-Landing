@@ -33,6 +33,7 @@ export interface Service {
   name: string;
   price: string;
   icon: string;
+  description: string;
   sort_order: number;
 }
 
@@ -69,13 +70,22 @@ export async function listServices(env: Env, tenantId: string): Promise<Service[
   return results;
 }
 
-export async function createService(env: Env, tenantId: string, s: { name: string; price: string; icon: string }): Promise<Service> {
+export async function createService(env: Env, tenantId: string, s: { name: string; price: string; icon: string; description?: string }): Promise<Service> {
   const id = crypto.randomUUID();
   const { results } = await env.DB.prepare('SELECT COALESCE(MAX(sort_order), -1) + 1 AS n FROM services WHERE tenant_id = ?').bind(tenantId).all<{ n: number }>();
   const sortOrder = results[0]?.n ?? 0;
-  await env.DB.prepare('INSERT INTO services (id, tenant_id, name, price, icon, sort_order) VALUES (?, ?, ?, ?, ?, ?)')
-    .bind(id, tenantId, s.name, s.price, s.icon, sortOrder).run();
-  return { id, tenant_id: tenantId, name: s.name, price: s.price, icon: s.icon, sort_order: sortOrder };
+  const description = s.description || '';
+  await env.DB.prepare('INSERT INTO services (id, tenant_id, name, price, icon, description, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)')
+    .bind(id, tenantId, s.name, s.price, s.icon, description, sortOrder).run();
+  return { id, tenant_id: tenantId, name: s.name, price: s.price, icon: s.icon, description, sort_order: sortOrder };
+}
+
+export async function updateService(env: Env, tenantId: string, serviceId: string, fields: { name?: string; price?: string; icon?: string; description?: string }): Promise<void> {
+  const keys = (['name', 'price', 'icon', 'description'] as const).filter(k => fields[k] !== undefined);
+  if (keys.length === 0) return;
+  const setClause = keys.map(k => `${k} = ?`).join(', ');
+  const values = keys.map(k => fields[k]);
+  await env.DB.prepare(`UPDATE services SET ${setClause} WHERE id = ? AND tenant_id = ?`).bind(...values, serviceId, tenantId).run();
 }
 
 export async function deleteService(env: Env, tenantId: string, serviceId: string): Promise<void> {
