@@ -2,6 +2,7 @@
 // build step) — this product is positioned as the lightweight, cheap
 // alternative to the main Nail-Core React/Vite admin, so it stays that way
 // on purpose.
+import { escapeHtml } from './site';
 
 const SHARED_STYLE = `
   * { box-sizing: border-box; }
@@ -27,11 +28,12 @@ const SHARED_STYLE = `
   .login-box { max-width: 360px; margin: 90px auto; }
 `;
 
-export function loginPage(title: string, loginEndpoint: string, afterLoginKey: string, appPath: string): string {
+export function loginPage(title: string, loginEndpoint: string, afterLoginKey: string, appPath: string, faviconUrl?: string): string {
+  const safeTitle = escapeHtml(title);
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title}</title><style>${SHARED_STYLE}</style></head><body>
+  <title>${safeTitle}</title>${faviconUrl ? `<link rel="icon" href="${faviconUrl}">` : ''}<style>${SHARED_STYLE}</style></head><body>
   <div class="login-box card">
-    <h2>${title}</h2>
+    <h2>${safeTitle}</h2>
     <div id="msg"></div>
     <label>Mật khẩu</label>
     <input type="password" id="pw" placeholder="Mật khẩu">
@@ -49,9 +51,9 @@ export function loginPage(title: string, loginEndpoint: string, afterLoginKey: s
   </script></body></html>`;
 }
 
-export function tenantAdminPage(): string {
+export function tenantAdminPage(brandName: string, faviconUrl?: string): string {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin</title><style>${SHARED_STYLE}</style></head><body>
+  <title>${escapeHtml(brandName)} — Admin</title>${faviconUrl ? `<link rel="icon" href="${faviconUrl}">` : ''}<style>${SHARED_STYLE}</style></head><body>
   <div class="bar"><b>Admin — Quản lý trang</b><button onclick="logout()">Đăng xuất</button></div>
   <div class="wrap">
     <div id="msg"></div>

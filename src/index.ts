@@ -132,10 +132,10 @@ export default {
 
     // ── Per-tenant admin (only reachable on a resolved tenant host) ────────
     if (tenant && (path === '/admin' || path === '/admin/')) {
-      return html(loginPage(`${tenant.brand_name} — Admin`, '/admin/api/login', 'tenant_token', '/admin/app'));
+      return html(loginPage(`${tenant.brand_name} — Admin`, '/admin/api/login', 'tenant_token', '/admin/app', tenant.logo_data_url || '/logo.png'));
     }
     if (tenant && path === '/admin/app') {
-      return html(tenantAdminPage());
+      return html(tenantAdminPage(tenant.brand_name, tenant.logo_data_url || '/logo.png'));
     }
     if (tenant && path === '/admin/api/login' && req.method === 'POST') {
       const { password } = await req.json<{ password: string }>().catch(() => ({ password: '' }));
