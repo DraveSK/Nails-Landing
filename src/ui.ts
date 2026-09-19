@@ -457,8 +457,8 @@ export function superAdminPage(): string {
         <ol style="margin:8px 0 0;padding-left:20px;line-height:1.7;">
           <li>Cloudflare Dashboard → <b>Add a Site</b> → nhập domain của khách</li>
           <li>Khách đổi nameserver sang 2 cái Cloudflare đưa (tại nơi mua domain)</li>
-          <li>Đợi zone chuyển <b>Active</b> → nhắn Claude tên domain để thêm Workers Route</li>
-          <li>Dán domain vào ô "Domain riêng" ở bảng dưới đây</li>
+          <li>Đợi zone chuyển <b>Active</b> → nhắn Claude: "domain X đã active, thêm route giúp" — Claude thêm 1 dòng vào wrangler.toml + deploy (1–2 phút), SSL tự cấp miễn phí</li>
+          <li>Dán domain vào ô "Domain riêng" ở bảng dưới đây — xong, domain khách chạy thẳng ra site của họ</li>
         </ol>
       </div>
       <div class="table-wrap"><table id="tenants_table"><thead><tr><th>Slug</th><th>Tên</th><th>Domain riêng</th><th>Trạng thái</th><th></th></tr></thead><tbody></tbody></table></div>
