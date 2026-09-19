@@ -68,6 +68,14 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
   const brand = jsSafe(tenant.brand_name);
   const primary = tenant.color_primary || '#FF3D8A';
   const secondary = tenant.color_secondary || '#8B2FF0';
+  const faviconUrl = tenant.logo_data_url || '/logo.png';
+
+  // The demo's hardcoded pink-circle-with-💅 favicon otherwise shows for
+  // every agency regardless of their own branding.
+  out = out.replace(
+    /<link rel="icon" href="data:image\/svg\+xml[^"]*">/,
+    `<link rel="icon" href="${faviconUrl}">`
+  );
 
   out = out.replace(
     /<title>Nails by Linh[^<]*<\/title>/,
@@ -225,7 +233,7 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="${escapeHtml(tenant.brand_name)}">
-${tenant.logo_data_url ? `<link rel="apple-touch-icon" href="${tenant.logo_data_url}">` : ''}
+<link rel="apple-touch-icon" href="${faviconUrl}">
 <style>${PWA_STYLE}${GALLERY_MARQUEE_STYLE}${MOBILE_NAV_FIX_STYLE}</style>
 </head>`);
 
