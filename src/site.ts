@@ -15,6 +15,20 @@ function jsSafe(s: string): string {
   return s.replace(/'/g, '’').replace(/"/g, '”');
 }
 
+// The nav's brand-name text has no width/overflow handling in the original
+// template — with a long brand name on a narrow phone it wraps onto
+// several lines, and since .nav is position:fixed, the hero section below
+// (whose top padding assumes a single-line nav) ends up partly hidden
+// behind it. Truncate instead of letting it wrap.
+const MOBILE_NAV_FIX_STYLE = `
+  .nav .logo { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 46vw; }
+  @media (max-width: 480px) {
+    .nav .logo { font-size: 18px; max-width: 40vw; }
+    .nav-cta { padding: 8px 14px; font-size: 13px; }
+    .lang-toggle { padding: 7px 9px; }
+  }
+`;
+
 const GALLERY_MARQUEE_STYLE = `
   .gallery-marquee-wrap { overflow: hidden; position: relative; width: 100%; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
   .gallery-track { display: flex; gap: 14px; width: max-content; animation-name: gallery-scroll; animation-timing-function: linear; animation-iteration-count: infinite; }
@@ -212,7 +226,7 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="${escapeHtml(tenant.brand_name)}">
 ${tenant.logo_data_url ? `<link rel="apple-touch-icon" href="${tenant.logo_data_url}">` : ''}
-<style>${PWA_STYLE}${GALLERY_MARQUEE_STYLE}</style>
+<style>${PWA_STYLE}${GALLERY_MARQUEE_STYLE}${MOBILE_NAV_FIX_STYLE}</style>
 </head>`);
 
   out = out.replace('© 2026', `© ${new Date().getFullYear()}`);

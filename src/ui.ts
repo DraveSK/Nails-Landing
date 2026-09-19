@@ -3,6 +3,23 @@
 // alternative to the main Nail-Core React/Vite admin, so it stays that way
 // on purpose.
 import { escapeHtml } from './site';
+import { renderInstallPromptScript, PWA_STYLE } from './pwa';
+
+// Head tags + end-of-body script that make an admin page installable as a
+// PWA — the operator/agency adds it to their home screen once and stays
+// logged in (see ADMIN_SESSION_TTL in index.ts) instead of reopening a
+// browser tab and re-typing a password every time.
+function adminPwaHead(manifestPath: string, themeColor: string): string {
+  return `<link rel="manifest" href="${manifestPath}"><meta name="theme-color" content="${themeColor}"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><style>:root{--primary:${themeColor};}${PWA_STYLE}</style>`;
+}
+function adminPwaFooter(brand: string): string {
+  return `${renderInstallPromptScript(escapeHtml(brand))}
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() { navigator.serviceWorker.register('/sw.js').catch(function() {}); });
+    }
+  </script>`;
+}
 
 const SHARED_STYLE = `
   * { box-sizing: border-box; }
@@ -19,6 +36,7 @@ const SHARED_STYLE = `
   button.primary { background: #FF3D8A; color: #fff; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 14px; }
   button.secondary { background: #eee; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; margin-left: 8px; }
   button.danger { background: #ffe1e1; color: #b30000; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   table { width: 100%; border-collapse: collapse; margin-top: 10px; }
   td, th { padding: 8px 6px; border-bottom: 1px solid #eee; text-align: left; font-size: .9rem; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -26,12 +44,19 @@ const SHARED_STYLE = `
   .msg.ok { background: #e3f7e9; color: #1a7a3a; }
   .msg.err { background: #fde4e4; color: #a30000; }
   .login-box { max-width: 360px; margin: 90px auto; }
+  @media (max-width: 560px) {
+    .row { grid-template-columns: 1fr; }
+    .wrap { margin: 16px auto; padding: 0 14px; }
+    .login-box { margin: 40px auto; max-width: 92vw; }
+    .bar { padding: 14px 16px; flex-wrap: wrap; gap: 10px; }
+    .card { padding: 18px; }
+  }
 `;
 
-export function loginPage(title: string, loginEndpoint: string, afterLoginKey: string, appPath: string, faviconUrl?: string): string {
+export function loginPage(title: string, loginEndpoint: string, afterLoginKey: string, appPath: string, faviconUrl?: string, brandForPwa?: string, themeColor?: string): string {
   const safeTitle = escapeHtml(title);
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${safeTitle}</title>${faviconUrl ? `<link rel="icon" href="${faviconUrl}">` : ''}<style>${SHARED_STYLE}</style></head><body>
+  <title>${safeTitle}</title>${faviconUrl ? `<link rel="icon" href="${faviconUrl}">` : ''}${adminPwaHead('/admin/manifest.json', themeColor || '#FF3D8A')}<style>${SHARED_STYLE}</style></head><body>
   <div class="login-box card">
     <h2>${safeTitle}</h2>
     <div id="msg"></div>
@@ -48,12 +73,14 @@ export function loginPage(title: string, loginEndpoint: string, afterLoginKey: s
       else document.getElementById('msg').innerHTML = '<div class="msg err">' + (data.message || 'Sai mật khẩu') + '</div>';
     }
     document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
-  </script></body></html>`;
+  </script>
+  ${adminPwaFooter(brandForPwa || title)}
+  </body></html>`;
 }
 
-export function tenantAdminPage(brandName: string, faviconUrl?: string): string {
+export function tenantAdminPage(brandName: string, faviconUrl?: string, themeColor?: string): string {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${escapeHtml(brandName)} — Admin</title>${faviconUrl ? `<link rel="icon" href="${faviconUrl}">` : ''}<style>${SHARED_STYLE}</style></head><body>
+  <title>${escapeHtml(brandName)} — Admin</title>${faviconUrl ? `<link rel="icon" href="${faviconUrl}">` : ''}${adminPwaHead('/admin/manifest.json', themeColor || '#FF3D8A')}<style>${SHARED_STYLE}</style></head><body>
   <div class="bar"><b>Admin — Quản lý trang</b><button onclick="logout()">Đăng xuất</button></div>
   <div class="wrap">
     <div id="msg"></div>
@@ -118,7 +145,7 @@ export function tenantAdminPage(brandName: string, faviconUrl?: string): string 
 
     <div class="card">
       <h2>Bảng giá dịch vụ</h2>
-      <table id="svc_table"><thead><tr><th>Icon</th><th>Tên</th><th>Giá</th><th></th></tr></thead><tbody></tbody></table>
+      <div class="table-wrap"><table id="svc_table"><thead><tr><th>Icon</th><th>Tên</th><th>Giá</th><th></th></tr></thead><tbody></tbody></table></div>
       <div class="row" style="margin-top:14px;">
         <div><label>Icon (emoji)</label><input id="new_icon" value="💅"></div>
         <div><label>Giá</label><input id="new_price" placeholder="vd: từ 25€"></div>
@@ -379,12 +406,14 @@ export function tenantAdminPage(brandName: string, faviconUrl?: string): string 
 
     load();
     loadGallery();
-  </script></body></html>`;
+  </script>
+  ${adminPwaFooter(brandName)}
+  </body></html>`;
 }
 
 export function superAdminLoginPage(): string {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Super Admin</title><link rel="icon" href="/logo.png"><style>${SHARED_STYLE}</style></head><body>
+  <title>Super Admin</title><link rel="icon" href="/logo.png">${adminPwaHead('/super-admin/manifest.json', '#1f1f2e')}<style>${SHARED_STYLE}</style></head><body>
   <div class="login-box card">
     <h2>Super Admin</h2>
     <div id="msg"></div>
@@ -401,12 +430,14 @@ export function superAdminLoginPage(): string {
       else document.getElementById('msg').innerHTML = '<div class="msg err">' + (data.message || 'Sai mật khẩu') + '</div>';
     }
     document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
-  </script></body></html>`;
+  </script>
+  ${adminPwaFooter('Super Admin')}
+  </body></html>`;
 }
 
 export function superAdminPage(): string {
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Super Admin</title><link rel="icon" href="/logo.png"><style>${SHARED_STYLE}</style></head><body>
+  <title>Super Admin</title><link rel="icon" href="/logo.png">${adminPwaHead('/super-admin/manifest.json', '#1f1f2e')}<style>${SHARED_STYLE}</style></head><body>
   <div class="bar"><b>Super Admin — Quản lý đại lý</b><button onclick="logout()">Đăng xuất</button></div>
   <div class="wrap">
     <div id="msg"></div>
@@ -422,7 +453,7 @@ export function superAdminPage(): string {
     <div class="card">
       <h2>Danh sách đại lý</h2>
       <p style="font-size:.8rem;color:#888;">Domain riêng: khách đổi nameserver domain của họ sang Cloudflare (Add a Site), đợi zone Active, rồi dán domain vào đây — báo tôi để tôi thêm Workers Route trỏ domain đó vào Worker "nails".</p>
-      <table id="tenants_table"><thead><tr><th>Slug</th><th>Tên</th><th>Domain riêng</th><th>Trạng thái</th><th></th></tr></thead><tbody></tbody></table>
+      <div class="table-wrap"><table id="tenants_table"><thead><tr><th>Slug</th><th>Tên</th><th>Domain riêng</th><th>Trạng thái</th><th></th></tr></thead><tbody></tbody></table></div>
     </div>
     <div class="card">
       <h2>Đổi mật khẩu Super Admin</h2>
@@ -491,5 +522,7 @@ export function superAdminPage(): string {
     }
 
     load();
-  </script></body></html>`;
+  </script>
+  ${adminPwaFooter('Super Admin')}
+  </body></html>`;
 }

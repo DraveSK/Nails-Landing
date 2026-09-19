@@ -18,6 +18,10 @@ import { renderManifest, renderServiceWorker } from './pwa';
 import { loginPage, tenantAdminPage, superAdminPage, superAdminLoginPage } from './ui';
 
 const ROOT_DOMAIN = 'nails.drave.sk';
+// 180 days — both admin surfaces are meant to be installed as a PWA and
+// left logged in, not re-authenticated constantly. Still password-gated
+// per device on first install.
+const ADMIN_SESSION_TTL = 86400 * 180;
 
 function json(data: any, status = 200): Response {
   return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } });
@@ -67,6 +71,28 @@ export default {
       });
     }
 
+    // Same static content everywhere, so this doesn't need tenant/host
+    // resolution — matters for /super-admin and /admin, which both want an
+    // installable PWA too (fewer re-logins on the phone they manage from).
+    if (path === '/sw.js') {
+      return new Response(renderServiceWorker(), { headers: { 'Content-Type': 'application/javascript' } });
+    }
+    if (path === '/super-admin/manifest.json') {
+      return new Response(JSON.stringify({
+        name: 'Super Admin — Nails',
+        short_name: 'Super Admin',
+        start_url: '/super-admin/app',
+        scope: '/super-admin/',
+        display: 'standalone',
+        background_color: '#ffffff',
+        theme_color: '#1f1f2e',
+        icons: [
+          { src: '/logo.png', sizes: '192x192', type: 'image/png' },
+          { src: '/logo.png', sizes: '512x512', type: 'image/png' },
+        ],
+      }), { headers: { 'Content-Type': 'application/manifest+json' } });
+    }
+
     // ── Super-admin (operator only, lives on the bare domain) ──────────────
     if (path === '/super-admin' || path === '/super-admin/') {
       return html(superAdminLoginPage());
@@ -80,7 +106,10 @@ export default {
       if (!hash || !password || !(await verifyPassword(password, hash))) {
         return json({ success: false, message: 'Sai mật khẩu' }, 401);
       }
-      const token = await signToken(env, { role: 'super' });
+      // Long-lived — this is meant to be installed as a PWA on the
+      // operator's own phone, where re-typing a password every 7 days
+      // defeats the point.
+      const token = await signToken(env, { role: 'super' }, ADMIN_SESSION_TTL);
       return json({ success: true, token });
     }
     if (path === '/super-admin/api/tenants' && req.method === 'GET') {
@@ -132,17 +161,33 @@ export default {
 
     // ── Per-tenant admin (only reachable on a resolved tenant host) ────────
     if (tenant && (path === '/admin' || path === '/admin/')) {
-      return html(loginPage(`${tenant.brand_name} — Admin`, '/admin/api/login', 'tenant_token', '/admin/app', tenant.logo_data_url || '/logo.png'));
+      return html(loginPage(`${tenant.brand_name} — Admin`, '/admin/api/login', 'tenant_token', '/admin/app', tenant.logo_data_url || '/logo.png', tenant.brand_name, tenant.color_primary));
     }
     if (tenant && path === '/admin/app') {
-      return html(tenantAdminPage(tenant.brand_name, tenant.logo_data_url || '/logo.png'));
+      return html(tenantAdminPage(tenant.brand_name, tenant.logo_data_url || '/logo.png', tenant.color_primary));
+    }
+    if (tenant && path === '/admin/manifest.json') {
+      const icon = tenant.logo_data_url || '/logo.png';
+      return new Response(JSON.stringify({
+        name: `${tenant.brand_name} — Admin`,
+        short_name: 'Admin',
+        start_url: '/admin/app',
+        scope: '/admin/',
+        display: 'standalone',
+        background_color: '#ffffff',
+        theme_color: tenant.color_primary || '#FF3D8A',
+        icons: [
+          { src: icon, sizes: '192x192', type: 'image/png' },
+          { src: icon, sizes: '512x512', type: 'image/png' },
+        ],
+      }), { headers: { 'Content-Type': 'application/manifest+json' } });
     }
     if (tenant && path === '/admin/api/login' && req.method === 'POST') {
       const { password } = await req.json<{ password: string }>().catch(() => ({ password: '' }));
       if (!password || !(await verifyPassword(password, tenant.admin_password_hash))) {
         return json({ success: false, message: 'Sai mật khẩu' }, 401);
       }
-      const token = await signToken(env, { role: 'tenant', tenantId: tenant.id });
+      const token = await signToken(env, { role: 'tenant', tenantId: tenant.id }, ADMIN_SESSION_TTL);
       return json({ success: true, token });
     }
     if (tenant && path === '/admin/api/me' && req.method === 'GET') {
@@ -230,9 +275,6 @@ export default {
     // ── Public site ──────────────────────────────────────────────────────
     if (tenant && path === '/manifest.json') {
       return new Response(renderManifest(tenant), { headers: { 'Content-Type': 'application/manifest+json' } });
-    }
-    if (tenant && path === '/sw.js') {
-      return new Response(renderServiceWorker(), { headers: { 'Content-Type': 'application/javascript' } });
     }
     if (tenant) {
       if (!tenant.active) return html(renderNotFound(), 404);
