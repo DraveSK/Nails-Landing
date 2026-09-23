@@ -105,6 +105,50 @@ export function renderTenantSite(tenant: Tenant, services: Service[], gallery: G
   );
   out = out.split('Nails by Linh').join(brand);
 
+  // SEO tags the earlier "Nails by Linh" substitution doesn't reach:
+  // canonical/og:url were hardcoded to the DEMO's own domain for every
+  // tenant, which tells Google "the real version of this page lives at
+  // nails.drave.sk" — actively telling it to treat every agency's page as
+  // a duplicate and prefer the demo. Combined with a description that
+  // was never tenant-specific to begin with, this is almost certainly why
+  // search results showed generic "Nail Salón" copy instead of the
+  // agency's own branding.
+  const publicUrl = `https://${tenant.custom_domain || `${tenant.slug}.nails.drave.sk`}/`;
+  const metaDesc = escapeHtml(tenant.hero_subtitle || tenant.brand_name);
+  out = out
+    .replace('<link rel="canonical" href="https://nails.drave.sk/">', `<link rel="canonical" href="${publicUrl}">`)
+    .replace('<meta property="og:url" content="https://nails.drave.sk/">', `<meta property="og:url" content="${publicUrl}">`)
+    .replace(
+      /<meta name="description" content="[^"]*">/,
+      `<meta name="description" content="${metaDesc}">`
+    )
+    .replace(
+      /<meta property="og:title" content="[^"]*">/,
+      `<meta property="og:title" content="${escapeHtml(tenant.brand_name)}">`
+    )
+    .replace(
+      /<meta property="og:description" content="[^"]*">/,
+      `<meta property="og:description" content="${metaDesc}">`
+    )
+    .replace(
+      /<meta property="og:image:alt" content="[^"]*">/,
+      `<meta property="og:image:alt" content="${escapeHtml(tenant.brand_name)}">`
+    )
+    .replace(
+      /<meta name="twitter:title" content="[^"]*">/,
+      `<meta name="twitter:title" content="${escapeHtml(tenant.brand_name)}">`
+    )
+    .replace(
+      /<meta name="twitter:description" content="[^"]*">/,
+      `<meta name="twitter:description" content="${metaDesc}">`
+    );
+
+  // og-image.jpg is still the shared demo photo (a tenant's own logo is a
+  // data: URL, which social/search crawlers can't fetch as an image), but
+  // at least point both image tags at the tenant's own domain instead of
+  // the demo's, consistent with canonical/og:url above.
+  out = out.split('https://nails.drave.sk/og-image.jpg').join(`${publicUrl}og-image.jpg`);
+
   if (safeLogo) {
     out = out.split('src="/logo.png"').join(`src="${safeLogo}"`);
   }
